@@ -1,0 +1,25 @@
+<gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogImpl>
+  <frameworks>
+    <entry>
+      <string>StatesUSA</string>
+      <gmx.iderc.geoserver.tjs.catalog.impl.FrameworkInfoImpl>
+        <id>FrameworkInfoImpl--70ed37de:14918b960ac:-7fef</id>
+        <name>StatesUSA</name>
+        <description>StatesUSA</description>
+        <enabled>true</enabled>
+        <featureTypeId>FeatureTypeInfoImpl--570ae188:124761b8d78:-7fc1</featureTypeId>
+        <uri>http://www.openplans.org/topp/StatesUSA</uri>
+        <referenceDate>2014-10-16 00:00:00.0 CEST</referenceDate>
+        <version>0</version>
+        <documentation>na</documentation>
+        <organization>Geoserver</organization>
+        <frameworkKey>STATE_ABBR</frameworkKey>
+        <frameworkKeyTitle>STATE_NAME</frameworkKeyTitle>
+        <wmsLayerId>LayerInfoImpl--570ae188:124761b8d78:-7fc0</wmsLayerId>
+      </gmx.iderc.geoserver.tjs.catalog.impl.FrameworkInfoImpl>
+    </entry>
+  </frameworks>
+  <dataStores/>
+  <dataSets/>
+  <joinedMaps/>
+</gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogImpl>
