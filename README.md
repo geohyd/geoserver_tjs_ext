@@ -1,12 +1,12 @@
 Table Joining Services extension
 =====================
-This is an upgrade of the community plugin TJS for Geoserver 2.16 on request of DREAL Corse. Code is based on code of Thijs Brentjens.
+This is an upgrade of the community plugin TJS for Geoserver 2.18 on request of DREAL Corse. Code is based on code of Thijs Brentjens.
 
 This extension is still under development. Please read this carefully. Any feedback is welcome.
 
 Features
 ========
-The TJS extension adds TJS support to Geoserver (2.16.x at the moment). It adds TJS operations to join data and adds web administration options. The web admin allows for management / configuration of:
+The TJS extension adds TJS support to Geoserver (2.18.x at the moment). It adds TJS operations to join data and adds web administration options. The web admin allows for management / configuration of:
 - spatial frameworks (spatial datasets to join data on) and non-spatial tabular data to be published in GDAS encoding
 - pre-configured joins.
 
@@ -18,7 +18,7 @@ The TJS OGC webservice interface of this extension supports almost all TJS opera
 - TJS support SLD parameters, either an url or the name of a geoserver style
 
 The above features have initially been developed by GeoCuba/GeoMix. Geonovum has added WFS support and has rewritten parts of the source code.
-Antea(r)Group upgraded this code for Geoserver 2.16, adding the POST request, adding the support of FilterColumn/FilterValue param and some another features.
+Antea(r)Group upgraded this code for Geoserver 2.18, adding the POST request, adding the support of FilterColumn/FilterValue param and some another features.
 
 Work in Progress
 ==========
@@ -33,6 +33,7 @@ Among things to do are:
 - Fix the exception when click on previous page
 - Fix the exception on the DescribeJoinAbilities XML Post request
 - Rewrite/clear the bean for the POST request
+- Fix the use of deprecated functions in TJS and TJSDATA
 
 Other remarks :
 

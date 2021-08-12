@@ -4,18 +4,32 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <properties>
-        <gs.version>2.16.1</gs.version>
-        <gt.version>22.1</gt.version>
-        <tjs.version>2.16.1</tjs.version>
+        <gs.version>2.18.3</gs.version>
+        <gt.version>24-SNAPSHOT</gt.version>
+        <tjs.version>2.18.3</tjs.version>
     </properties>
     <groupId>gmx.iderc.geoserver</groupId>
     <artifactId>tjsdata</artifactId>
-    <version>2.16.1</version>
+    <version>2.18.3</version>
     <name>Geomix TJS Datasource suport(tjs-data)</name>
     <url>http://maven.apache.org</url>
     <packaging>jar</packaging>
 
 <repositories>
+  <repository>
+    <id>osgeo</id>
+    <name>OSGeo Release Repository</name>
+    <url>https://repo.osgeo.org/repository/release/</url>
+    <snapshots><enabled>false</enabled></snapshots>
+    <releases><enabled>true</enabled></releases>
+  </repository>
+  <repository>
+    <id>osgeo-snapshot</id>
+    <name>OSGeo Snapshot Repository</name>
+    <url>https://repo.osgeo.org/repository/snapshot/</url>
+    <snapshots><enabled>true</enabled></snapshots>
+    <releases><enabled>false</enabled></releases>
+  </repository>
   <repository>
     <id>boundless</id>
     <name>Boundless Maven Repository</name>
@@ -25,14 +39,14 @@
     </snapshots>
   </repository>
 
-  <repository>
+  <!--<repository>
     <id>osgeo</id>
     <name>Open Source Geospatial Foundation Repository</name>
     <url>http://download.osgeo.org/webdav/geotools/</url>
     <snapshots>
       <enabled>true</enabled>
     </snapshots>
-  </repository>
+  </repository>-->
 
   <repository>
     <id>maven-restlet</id>
@@ -79,6 +93,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
+                    <showDeprecation>true</showDeprecation>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
