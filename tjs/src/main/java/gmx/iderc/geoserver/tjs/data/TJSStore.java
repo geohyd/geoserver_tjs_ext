@@ -2,6 +2,10 @@ package gmx.iderc.geoserver.tjs.data;
 
 import gmx.iderc.geoserver.tjs.TJSExtension;
 import gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogFactoryImpl;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geotools.data.DataAccess;
@@ -9,17 +13,9 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.util.ProgressListener;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Created with IntelliJ IDEA.
- * User: capote
- * Date: 10/8/12
- * Time: 9:34 PM
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: capote Date: 10/8/12 Time: 9:34 PM To change this template use
+ * File | Settings | File Templates.
  */
 public class TJSStore extends StoreInfoImpl implements DataStoreInfo, Serializable {
 
@@ -27,15 +23,26 @@ public class TJSStore extends StoreInfoImpl implements DataStoreInfo, Serializab
     transient Catalog catalog;
     String id;
     String type;
+    String name;
+    String description;
+    boolean enable;
 
     public TJSStore(TJS_1_0_0_DataStore store, Catalog catalog) {
         this.store = store;
         this.catalog = catalog;
         this.id = TJSCatalogFactoryImpl.getIdForObject(this);
         this.type = this.getType();
+        this.name = store.getFrameworkInfo().getName();
+        this.description = store.getFrameworkInfo().getDescription();
+        this.enable = store.getFrameworkInfo().getEnabled();
+
+        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        params.put("FrameworkId", store.getFrameworkInfo().getId());
+        this.connectionParameters = params;
     }
 
-    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener) throws IOException {
+    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(
+            ProgressListener listener) throws IOException {
         return store;
     }
 
@@ -49,24 +56,16 @@ public class TJSStore extends StoreInfoImpl implements DataStoreInfo, Serializab
 
     public String getName() {
         // Thijs: trying to avoid NPEs when reloading the config.xml
-        if (store != null) {
-            return store.getFrameworkInfo().getName();
-        }   else {
-            return null;
-        }
+        return this.name;
     }
 
     public void setName(String name) {
-        // this.name = name;
+        this.name = name;
     }
 
     public String getDescription() {
         // Thijs: trying to avoid NPEs when reloading the config.xml
-        if (store != null) {
-            return store.getFrameworkInfo().getDescription();
-        }   else {
-            return null;
-        }
+        return this.description;
     }
 
     public void setDescription(String description) {
@@ -90,11 +89,7 @@ public class TJSStore extends StoreInfoImpl implements DataStoreInfo, Serializab
 
     public boolean isEnabled() {
         // Thijs: trying to avoid NPEs when reloading the config.xml
-        if (store != null) {
-            return store.getFrameworkInfo().getEnabled();
-        }   else {
-            return false;
-        }
+        return this.enable;
     }
 
     public void setEnabled(boolean enabled) {
@@ -107,46 +102,30 @@ public class TJSStore extends StoreInfoImpl implements DataStoreInfo, Serializab
     public WorkspaceInfo getWorkspace() {
         WorkspaceInfo wi = null;
         try {
-            wi = catalog.getWorkspaceByName(TJSExtension.TJS_TEMP_WORKSPACE) ;
-        }   catch (Exception e) {
+            wi = catalog.getWorkspaceByName(TJSExtension.TJS_TEMP_WORKSPACE);
+        } catch (Exception e) {
 
         }
         return wi;
     }
 
-    public void setWorkspace(WorkspaceInfo workspace) {
-
-    }
+    public void setWorkspace(WorkspaceInfo workspace) {}
 
     public Map<String, Serializable> getConnectionParameters() {
-        // TODO: workaround to provide some params?
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
-
-        // Thijs: workaround to try to get around the exceptions when reloading the config
-        try {
-            params.put("FrameworkId", store.getFrameworkInfo().getId());
-        } catch (Exception e) {
-
-        }
-        // params.put("FrameworkId", store.getFrameworkInfo().getId());
-        return params;
+        return this.connectionParameters;
     }
 
     public Throwable getError() {
         return null;
     }
 
-    public void setError(Throwable t) {
-
-    }
+    public void setError(Throwable t) {}
 
     public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         return null;
     }
 
-    public void accept(CatalogVisitor visitor) {
-
-    }
+    public void accept(CatalogVisitor visitor) {}
 
     public String getId() {
         return id;

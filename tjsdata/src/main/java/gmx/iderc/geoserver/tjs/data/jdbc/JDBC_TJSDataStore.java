@@ -31,6 +31,8 @@ public abstract class JDBC_TJSDataStore extends TJSAbstractDataStore {
 
     Connection connection = null;
 
+    String defaultSchemaName = "public";
+
     public JDBC_TJSDataStore(Map params, JDBC_TJSDataStoreFactory factory) {
         super(params, factory);
         this.params = params;
@@ -68,9 +70,31 @@ public abstract class JDBC_TJSDataStore extends TJSAbstractDataStore {
     public String[] getAllAvaliableDatasources() {
         ArrayList<String> tableList = new ArrayList<String>();
         ResultSet tables = null;
+        
         try {
-            // tables = getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE", "VIEW"});
-            tables = getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE", "VIEW"});
+            String schemaName = null;
+            String dbtype = "postgres"; // FIX IT -> find the dbtype of the current DS
+            try{
+                // Check if the DataStore have a data source name.
+                // If it not empty, this is a user datastore (postgres)
+                // If empty, this is a gdas datastore.
+                //System.out.println("getAllAvaliableDatasources - params : " + params);
+                //System.out.println("getAllAvaliableDatasources - Data Source Name : " + (String) params.get("Data Source Name"));
+                String dataSourceName = (String) params.get("Data Source Name");
+                if(dataSourceName != null){ // TODO : Need to fix it. Need a more consistente solution.
+                    String paramSchemaName = (String) JDBC_TJSDataStoreFactory.SCHEMA.lookUp(params);
+                    if(paramSchemaName != null && paramSchemaName instanceof String){
+                        schemaName = paramSchemaName;
+                    }else{
+                        schemaName = defaultSchemaName;
+                    }
+                }
+            }catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Cannot read SchemaName configuration", ex);
+                schemaName = null;
+            }
+            //tables = getConnection().getMetaData().getTables(null, null, null, new String[]{"TABLE", "VIEW"});
+            tables = getConnection().getMetaData().getTables(null, schemaName, null, new String[]{"TABLE", "VIEW"});
             while (tables.next()) {
                 int ischema = tables.findColumn("TABLE_SCHEM");
                 String sschema = tables.getString(ischema);
@@ -80,17 +104,16 @@ public abstract class JDBC_TJSDataStore extends TJSAbstractDataStore {
                 // Therefore: don't add the schema to the tablelist, but just add the name
                 //
                 // TODO: improve handling of the schema in tablenames for the GDAS cache?
-                // System.out.println("In getAllAvaliableDatasources: " + sschema + "." +sname);
                 /*
                 if (sschema == null){
-//                    tableList.add(sname.toUpperCase());
+                    // tableList.add(sname.toUpperCase());
                     tableList.add(sname);
                 }else{
                     tableList.add(sschema + "." + sname);
                 } */
                 tableList.add(sname);
             }
-            tables.close();
+            //tables.close();
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -98,6 +121,8 @@ public abstract class JDBC_TJSDataStore extends TJSAbstractDataStore {
             try {
                 tables.close();
             }catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }catch(Exception ex){
                 LOGGER.log(Level.SEVERE, null, ex);
             }
         }

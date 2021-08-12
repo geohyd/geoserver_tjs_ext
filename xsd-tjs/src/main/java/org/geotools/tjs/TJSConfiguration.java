@@ -2,7 +2,7 @@ package org.geotools.tjs;
 
 import net.opengis.tjs10.Tjs10Factory;
 import org.geotools.tjs.bindings.*;
-import org.geotools.xml.Configuration;
+import org.geotools.xsd.Configuration;
 import org.picocontainer.MutablePicoContainer;
 
 /**

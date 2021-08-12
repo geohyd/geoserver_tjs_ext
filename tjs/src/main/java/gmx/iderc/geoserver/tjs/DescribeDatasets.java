@@ -5,24 +5,21 @@
 package gmx.iderc.geoserver.tjs;
 
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
-import net.opengis.tjs10.DescribeDatasetsType;
-import net.opengis.tjs10.VersionType2;
-import org.geoserver.ows.util.RequestUtils;
-import org.geotools.xml.transform.TransformerBase;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import net.opengis.tjs10.DescribeDatasetsType;
+import net.opengis.tjs10.VersionType2;
+import org.geoserver.ows.util.RequestUtils;
+import org.geotools.xml.transform.TransformerBase;
 
 /**
  * Web Feature Service DescribeFeatureType operation.
- * <p>
- * This operation returns an array of  {@link org.geoserver.data.feature.FeatureTypeInfo} metadata
+ *
+ * <p>This operation returns an array of {@link org.geoserver.data.feature.FeatureTypeInfo} metadata
  * objects corresponding to the feature type names specified in the request.
- * </p>
  *
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP
@@ -30,25 +27,22 @@ import java.util.logging.Logger;
  * @version $Id: DescribeFeatureType.java 14551 2010-07-07 16:44:21Z groldan $
  */
 public class DescribeDatasets {
-    /**
-     * Catalog reference
-     */
+    /** Catalog reference */
     private TJSCatalog catalog;
 
-    /**
-     * WFS service
-     */
+    /** WFS service */
     private TJSInfo tjs;
 
     /**
      * Creates a new wfs DescribeFeatureType operation.
      *
-     * @param wfs     The wfs configuration
+     * @param wfs The wfs configuration
      * @param catalog The geoserver catalog.
      */
     public DescribeDatasets(TJSInfo wfs, TJSCatalog catalog) {
         this.catalog = catalog;
-        this.tjs = tjs;
+        // this.tjs = tjs;
+        this.tjs = wfs;
     }
 
     public TJSInfo getTJS() {
@@ -75,12 +69,11 @@ public class DescribeDatasets {
         return versions;
     }
 
-    public TransformerBase run(DescribeDatasetsType request)
-            throws TJSException {
+    public TransformerBase run(DescribeDatasetsType request) throws TJSException {
 
         List<String> provided = new ArrayList<String>();
         provided.add("1.0.0");
-//        provided.add("1.1.0");
+        // provided.add("1.1.0");
         List<String> requested = new ArrayList<String>();
 
         if (request.getVersion() != null)
@@ -89,6 +82,7 @@ public class DescribeDatasets {
             requested.add("1.0.0");
         }
         String version = RequestUtils.getVersionPreOws(provided, requested);
+        // String version = RequestUtils.getVersionOws20(provided, requested);
 
         final DescribeDatasetsTransformer ddsTransformer;
         if ("1.0.0".equals(version)) {
@@ -97,7 +91,8 @@ public class DescribeDatasets {
             throw new TJSException("Could not understand version:" + version);
         }
         try {
-            ddsTransformer.setEncoding(Charset.forName(tjs.getGeoServer().getGlobal().getCharset()));
+            ddsTransformer.setEncoding(
+                    Charset.forName(tjs.getGeoServer().getGlobal().getSettings().getCharset()));
         } catch (Exception ex) {
             Logger.getLogger(GetCapabilities.class.getName()).log(Level.SEVERE, ex.getMessage());
         }

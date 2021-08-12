@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.opengis.net/tjs/1.0" elementFormDefault="qualified" xml:lang="en" version="1.0.0">
+    <annotation>
+        <appinfo>$Id: tjsAll.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema Document includes and imports, directly and indirectly, all the XML Schemas
+                defined by the tjs Implementation Standard.
+            </description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ========= includes and imports ================================ -->
+    <include schemaLocation="1.0.0/tjsGetCapabilities_request.xsd"/>
+    <include schemaLocation="1.0.0/tjsGetCapabilities_response.xsd"/>
+    <include schemaLocation="1.0.0/tjsDescribeFrameworks_request.xsd"/>
+    <include schemaLocation="1.0.0/tjsDescribeFrameworks_response.xsd"/>
+    <include schemaLocation="1.0.0/tjsDescribeDatasets_request.xsd"/>
+    <include schemaLocation="1.0.0/tjsDescribeDatasets_response.xsd"/>
+    <include schemaLocation="1.0.0/tjsDescribeData_request.xsd"/>
+    <include schemaLocation="1.0.0/tjsDescribeData_response.xsd"/>
+    <include schemaLocation="1.0.0/tjsGetData_request.xsd"/>
+    <include schemaLocation="1.0.0/tjsGetData_response.xsd"/>
+    <include schemaLocation="1.0.0/tjsDescribeJoinAbilities_request.xsd"/>
+    <include schemaLocation="1.0.0/tjsDescribeJoinAbilities_response.xsd"/>
+    <include schemaLocation="1.0.0/tjsDescribeKey_request.xsd"/>
+    <include schemaLocation="1.0.0/tjsDescribeKey_response.xsd"/>
+    <include schemaLocation="1.0.0/tjsJoinData_request.xsd"/>
+    <include schemaLocation="1.0.0/tjsJoinData_response.xsd"/>
+    <include schemaLocation="1.0.0/tjsService.xsd"/>
+    <include schemaLocation="1.0.0/tjsWSDL.xsd"/>
+</schema>

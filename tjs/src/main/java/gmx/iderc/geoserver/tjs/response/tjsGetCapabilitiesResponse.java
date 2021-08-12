@@ -4,40 +4,36 @@
  */
 package gmx.iderc.geoserver.tjs.response;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.List;
+import javax.xml.transform.TransformerException;
 import net.opengis.tjs10.GetCapabilitiesType;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geotools.xml.transform.TransformerBase;
 
-import javax.xml.transform.TransformerException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.List;
-
-
 public class tjsGetCapabilitiesResponse extends Response {
     public tjsGetCapabilitiesResponse() {
         super(TransformerBase.class);
     }
 
-    /**
-     * Makes sure this triggers only
-     * </p>
-     */
+    /** Makes sure this triggers only */
     public boolean canHandle(Operation operation) {
         // is this a wfs capabilities request?
-        return "GetCapabilities".equalsIgnoreCase(operation.getId()) &&
-                       operation.getService().getId().equals("tjs");
+        return "GetCapabilities".equalsIgnoreCase(operation.getId())
+                && operation.getService().getId().equals("tjs");
     }
 
     public String getMimeType(Object value, Operation operation) {
-        GetCapabilitiesType request = (GetCapabilitiesType) OwsUtils.parameter(operation
-                                                                                       .getParameters(), GetCapabilitiesType.class);
+        GetCapabilitiesType request =
+                (GetCapabilitiesType)
+                        OwsUtils.parameter(operation.getParameters(), GetCapabilitiesType.class);
 
         if ((request != null) && (request.getAcceptFormats() != null)) {
-            //look for an accepted format
+            // look for an accepted format
             List formats = request.getAcceptFormats().getOutputFormat();
 
             for (Iterator f = formats.iterator(); f.hasNext(); ) {
@@ -49,12 +45,11 @@ public class tjsGetCapabilitiesResponse extends Response {
             }
         }
 
-        //default
+        // default
         return "application/xml";
     }
 
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException {
         TransformerBase tx = (TransformerBase) value;
 
         try {

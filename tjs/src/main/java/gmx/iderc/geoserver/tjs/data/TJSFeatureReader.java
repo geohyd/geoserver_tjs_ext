@@ -3,34 +3,23 @@ package gmx.iderc.geoserver.tjs.data;
 import com.sun.rowset.CachedRowSetImpl;
 import gmx.iderc.geoserver.tjs.catalog.ColumnInfo;
 import gmx.iderc.geoserver.tjs.catalog.DatasetInfo;
-import gmx.iderc.geoserver.tjs.data.jdbc.JDBC_TJSDatasource;
-
-// GeoServer logging
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import org.geotools.util.logging.Logging;
-
-import org.geotools.data.DataStore;
-import org.geotools.data.FeatureReader;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.Name;
-
-import org.geotools.data.store.ContentState;
-
-import javax.sql.RowSet;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sql.RowSet;
+import org.geotools.data.FeatureReader;
+import org.geotools.data.store.ContentState;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.util.logging.Logging;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: capote
- * Date: 9/22/12
- * Time: 11:46 AM
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: capote Date: 9/22/12 Time: 11:46 AM To change this template use
+ * File | Settings | File Templates.
  */
 public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, SimpleFeature> {
 
@@ -52,7 +41,7 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
                 try {
                     // Convert values to Strings for now, since all GDAS attributes are strings
                     // TODO: use GDAS types better, but this requires some conversion work
-                    if(keyValue instanceof Double) {
+                    if (keyValue instanceof Double) {
                         // parse it to a string
                         keyValue = ((Double) keyValue).intValue();
                     }
@@ -65,7 +54,7 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
                         keyValue = keyValue.toString().toUpperCase();
                     }
                     absRow = index.get(keyValue);
-                }  catch (Exception ex){
+                } catch (Exception ex) {
                     LOGGER.info(ex.getMessage());
                 }
                 if (absRow >= 0) {
@@ -78,7 +67,7 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
                 }
             } catch (SQLException ex) {
                 LOGGER.warning(ex.getMessage());
-            }  catch (Exception ex) {
+            } catch (Exception ex) {
                 LOGGER.warning(ex.getMessage());
             }
         }
@@ -98,18 +87,22 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
 
     public TJSFeatureReader(ContentState contentState) {
         // TODO Thijs: check for nulls / not available parts  ?
-        SimpleFeatureType ft =  contentState.getFeatureType();
-        new TJSFeatureReader(ft, this.featureReader, this.datasetInfo)  ;
+        SimpleFeatureType ft = contentState.getFeatureType();
+        new TJSFeatureReader(ft, this.featureReader, this.datasetInfo);
     }
 
-    public TJSFeatureReader(SimpleFeatureType type, FeatureReader<SimpleFeatureType, SimpleFeature> featureReader, DatasetInfo datasetInfo) {
+    public TJSFeatureReader(
+            SimpleFeatureType type,
+            FeatureReader<SimpleFeatureType, SimpleFeature> featureReader,
+            DatasetInfo datasetInfo) {
         this.featureReader = featureReader;
         this.datasetInfo = datasetInfo;
         this.type = type;
-        // TODO: determine if features without joined results should be skipped  / removed or have empty values
+        // TODO: determine if features without joined results should be skipped  / removed or have
+        // empty values
         try {
             rst = new CachedRowSetImpl();
-            if (this.tjsDatasource==null)  {
+            if (this.tjsDatasource == null) {
                 this.tjsDatasource = datasetInfo.getTJSDatasource();
             }
             RowSet remote = this.tjsDatasource.getRowSet();
@@ -131,36 +124,39 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
             rst.close();
         } catch (SQLException ex) {
 
-            LOGGER.log(Level.WARNING, "Exception in closing TJSFeatureReader --> " + ex.getMessage());
+            LOGGER.log(
+                    Level.WARNING, "Exception in closing TJSFeatureReader --> " + ex.getMessage());
         }
     }
 
-    public SimpleFeature next() throws IOException, IllegalArgumentException, NoSuchElementException {
+    public SimpleFeature next()
+            throws IOException, IllegalArgumentException, NoSuchElementException {
 
-        // TODO: do the loop the other way around? Use the rst to loop over features and not all features?
+        // TODO: do the loop the other way around? Use the rst to loop over features and not all
+        // features?
         SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(type);
         SimpleFeature wfsFeature = featureReader.next();
         featureBuilder.addAll(wfsFeature.getAttributes());
 
         SimpleFeature ft = null;
-
         String frameworkKey = datasetInfo.getFramework().getFrameworkKey().getName();
         Object keyValue = wfsFeature.getAttribute(frameworkKey);
 
-        // TODO: decide if no result, then return null and skip the result? Or add all result and provide empty values (as done now)
+        // TODO: decide if no result, then return null and skip the result? Or add all result and
+        // provide empty values (as done now)
         boolean match = false;
 
         // What if the value is an Integer? cast it?
         for (ColumnInfo column : datasetInfo.getColumns()) {
             // TODO: always to string? Or to the type as defined in the GDAS file?
-            // NOTE: also see other classes for createing the GDAS cache where column names are changed
+            // NOTE: also see other classes for createing the GDAS cache where column names are
+            // changed
             Object newValue = null;
             String columnName = column.getName();
             // get a safe column name?
 
             try {
                 if (keyValue != null) {
-                    LOGGER.finer("Column name in featurereader:  " + column.getName());
                     if (caseInsensitive) {
                         keyValue = keyValue.toString().toUpperCase();
                     }
@@ -170,7 +166,7 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
                 newValue = "";
             }
             if (newValue == null) {
-                newValue = "";      // this assumes string. But we need to know the type?
+                newValue = ""; // this assumes string. But we need to know the type?
             } else {
                 // We do have at least one value, so we can continue building the feature
                 match = true;
@@ -180,12 +176,14 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
         }
 
         if (!match) {
-            LOGGER.fine("We don't have an object match for " + wfsFeature.getID() + ", let's continue with the next feature.");
+            LOGGER.fine(
+                    "We don't have an object match for "
+                            + wfsFeature.getID()
+                            + ", let's continue with the next feature.");
         }
 
         try {
             ft = featureBuilder.buildFeature(wfsFeature.getID());
-            LOGGER.fine("We have a feature " + ft.getID());
             return ft;
         } catch (Exception ex) {
             LOGGER.warning(ex.getMessage());

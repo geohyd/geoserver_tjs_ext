@@ -1,10 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.geoserver</groupId>
+        <artifactId>web</artifactId>
+        <version>2.16.1</version>
+        <relativePath>../../../web/pom.xml</relativePath>
+    </parent>
+    <properties>
+        <gs.version>2.16.1</gs.version>
+        <gt.version>22.1</gt.version>
+        <tjs.version>2.16.1</tjs.version>
+    </properties>
     <groupId>gmx.iderc.geoserver</groupId>
     <artifactId>tjs-web</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.7-SNAPSHOT</version>
+    <version>2.16.1</version>
     <name>GeoMIX TJS for Geoserver UI Module(tjs-web)</name>
     <url>http://maven.apache.org</url>
 
@@ -12,9 +23,9 @@
   <repository>
     <id>boundless</id>
     <name>Boundless Maven Repository</name>
-    <url>http://repo.boundlessgeo.com/main</url>
+    <url>https://repo.osgeo.org/repository/release/</url>
     <snapshots>
-    <enabled>true</enabled>
+      <enabled>true</enabled>
     </snapshots>
   </repository>
 
@@ -50,12 +61,6 @@
    </releases>
   </pluginRepository>
  </pluginRepositories>
-    <parent>
-        <groupId>org.geoserver</groupId>
-        <artifactId>web</artifactId>
-        <!-- <version>2.6-SNAPSHOT</version> -->
-        <version>2.7.3</version>
-    </parent>
     <dependencies>
         <dependency>
             <groupId>gmx.iderc.geoserver</groupId>
@@ -77,48 +82,37 @@
         <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>gs-web-core</artifactId>
-            <!-- <version>2.6-SNAPSHOT</version> --> 
-            <version>2.7.3</version>
+            <version>${gs.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>gs-web-core</artifactId>
-            <!-- <version>2.6-SNAPSHOT</version> --> 
-            <version>2.7.3</version>
+            <version>${gs.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-main</artifactId>
-            <!-- <version>2.6-SNAPSHOT</version> --> 
-            <version>2.7.3</version>
+            <version>${gs.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-        <!--    <dependency>
-                <groupId>org.geotools</groupId>
-                <artifactId>gt-main</artifactId>
-                <version>8.4</version>
-                <scope>test</scope>
-            </dependency>
-        -->
         <dependency>
             <groupId>com.mockrunner</groupId>
             <artifactId>mockrunner</artifactId>
+            <version>0.3.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-coverage</artifactId>
+            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-validation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-data</artifactId>
+            <version>${gt.version}</version>
         </dependency>
     </dependencies>
 </project>

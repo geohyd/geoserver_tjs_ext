@@ -4,10 +4,8 @@
  */
 package gmx.iderc.geoserver.tjs.kvp;
 
-import net.opengis.tjs10.GetCapabilitiesType;
-
 import java.util.Map;
-
+import net.opengis.tjs10.GetCapabilitiesType;
 
 public class GetCapabilitiesKvpRequestReader extends TJSKvpRequestReader {
     public GetCapabilitiesKvpRequestReader() {

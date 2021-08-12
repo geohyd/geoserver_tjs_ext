@@ -5,13 +5,10 @@
 
 package gmx.iderc.geoserver.tjs.kvp;
 
+import java.util.Map;
 import net.opengis.tjs10.DescribeFrameworksType;
 
-import java.util.Map;
-
-/**
- * @author root
- */
+/** @author root */
 public class DescribeFrameworksKvpRequestReader extends TJSKvpRequestReader {
 
     public DescribeFrameworksKvpRequestReader() {
@@ -30,6 +27,4 @@ public class DescribeFrameworksKvpRequestReader extends TJSKvpRequestReader {
 
         return request;
     }
-
-
 }

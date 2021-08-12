@@ -9,7 +9,13 @@ import gmx.iderc.geoserver.tjs.catalog.DatasetInfo;
 import gmx.iderc.geoserver.tjs.catalog.FrameworkInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.data.xml.ClassToXSDMapper;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sql.RowSet;
 import net.opengis.tjs10.GetDataType;
+import org.eclipse.emf.ecore.xml.type.SimpleAnyType;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.ows.Dispatcher;
@@ -27,15 +33,9 @@ import org.opengis.filter.capability.FunctionName;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
-import javax.sql.RowSet;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
- * Based on the <code>org.geotools.xml.transform</code> framework, does the job
- * of encoding a WFS 1.0 Capabilities document.
+ * Based on the <code>org.geotools.xml.transform</code> framework, does the job of encoding a WFS
+ * 1.0 Capabilities document.
  *
  * @author Gabriel Roldan, Axios Engineering
  * @author Chris Holmes
@@ -44,42 +44,32 @@ import java.util.logging.Logger;
  */
 public abstract class GetDataTransformer extends TransformerBase {
 
-    /**
-     * logger
-     */
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(GetDataTransformer.class.getPackage().getName());
-    /**
-     * identifer of a http get + post request
-     */
+    /** logger */
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(
+                    GetDataTransformer.class.getPackage().getName());
+    /** identifer of a http get + post request */
     private static final String HTTP_GET = "Get";
+
     private static final String HTTP_POST = "Post";
-    /**
-     * wfs namespace
-     */
+    /** wfs namespace */
     protected static final String TJS_PREFIX = "tjs";
-    protected static final String TJS_URI = TJS.NAMESPACE;//"http://www.opengis.net/tjs";
-    /**
-     * xml schema namespace + prefix
-     */
+
+    protected static final String TJS_URI = TJS.NAMESPACE; // "http://www.opengis.net/tjs";
+    /** xml schema namespace + prefix */
     protected static final String XSI_PREFIX = "xsi";
+
     protected static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
-    /**
-     * filter namesapce + prefix
-     */
+    /** filter namesapce + prefix */
     protected static final String OGC_PREFIX = "ogc";
+
     protected static final String OGC_URI = OGC.NAMESPACE;
-    /**
-     * wfs service
-     */
+    /** wfs service */
     protected TJSInfo tjs;
-    /**
-     * catalog
-     */
+    /** catalog */
     protected TJSCatalog catalog;
 
-    /**
-     * Creates a new CapabilitiesTransformer object.
-     */
+    /** Creates a new CapabilitiesTransformer object. */
     public GetDataTransformer(TJSInfo tjs, TJSCatalog catalog) {
         super();
         setNamespaceDeclarationEnabled(false);
@@ -89,16 +79,18 @@ public abstract class GetDataTransformer extends TransformerBase {
     }
 
     Set<FunctionName> getAvailableFunctionNames() {
-        //Sort them up for easier visual inspection
-        SortedSet sortedFunctions = new TreeSet(new Comparator() {
+        // Sort them up for easier visual inspection
+        SortedSet sortedFunctions =
+                new TreeSet(
+                        new Comparator() {
 
-            public int compare(Object o1, Object o2) {
-                String n1 = ((FunctionName) o1).getName();
-                String n2 = ((FunctionName) o2).getName();
+                            public int compare(Object o1, Object o2) {
+                                String n1 = ((FunctionName) o1).getName();
+                                String n2 = ((FunctionName) o2).getName();
 
-                return n1.toLowerCase().compareTo(n2.toLowerCase());
-            }
-        });
+                                return n1.toLowerCase().compareTo(n2.toLowerCase());
+                            }
+                        });
 
         Set<FunctionFactory> factories = CommonFactoryFinder.getFunctionFactories(null);
         for (FunctionFactory factory : factories) {
@@ -125,16 +117,16 @@ public abstract class GetDataTransformer extends TransformerBase {
 
         class GetDataTranslator extends TranslatorSupport {
 
-            //            private static final String GML_3_1_1_FORMAT = "text/xml; subtype=gml/3.1.1";
+            // private static final String GML_3_1_1_FORMAT = "text/xml; subtype=gml/3.1.1";
             GetDataType request;
 
             protected String getBaseURL() {
                 try {
                     Request owsRequest = ((ThreadLocal<Request>) Dispatcher.REQUEST).get();
-                    if (owsRequest != null){
+                    if (owsRequest != null) {
                         return owsRequest.getHttpRequest().getRequestURL().toString();
-                    }else{
-                        //ocurre cuando se realizan los test
+                    } else {
+                        // ocurre cuando se realizan los test
                         return "http://localhost:8080/geoserver/";
                     }
                 } catch (Exception ex) {
@@ -162,25 +154,38 @@ public abstract class GetDataTransformer extends TransformerBase {
             public void encode(Object object) throws IllegalArgumentException {
                 request = (GetDataType) object;
 
-                AttributesImpl attributes = attributes(new String[]{
-                                                                           "version", "1.0",
-                                                                           "lang", "es",
-                                                                           "service", "TJS",
-                                                                           "capabilities", "http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities",
-                                                                           "xmlns:xsi", XSI_URI,
-                                                                           "xmlns", TJS_URI,
-                                                                           "xmlns:ows", OWS.NAMESPACE,
-                                                                           "xmlns:ogc", OGC.NAMESPACE,
-                                                                           "xmlns:xlink", XLINK.NAMESPACE,
-                                                                           "xsi:schemaLocation", TJS.NAMESPACE + " http://schemas.opengis.net/tjs/1.0/tjsGetData_response.xsd",
-                });
+                AttributesImpl attributes =
+                        attributes(
+                                new String[] {
+                                    "version",
+                                    "1.0",
+                                    "lang",
+                                    "es",
+                                    "service",
+                                    "TJS",
+                                    "capabilities",
+                                    "http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities",
+                                    "xmlns:xsi",
+                                    XSI_URI,
+                                    "xmlns",
+                                    TJS_URI,
+                                    "xmlns:ows",
+                                    OWS.NAMESPACE,
+                                    "xmlns:ogc",
+                                    OGC.NAMESPACE,
+                                    "xmlns:xlink",
+                                    XLINK.NAMESPACE,
+                                    "xsi:schemaLocation",
+                                    TJS.NAMESPACE
+                                            + " http://schemas.opengis.net/tjs/1.0/tjsGetData_response.xsd",
+                                });
 
                 List<NamespaceInfo> namespaces = catalog.getGeoserverCatalog().getNamespaces();
                 for (NamespaceInfo namespace : namespaces) {
                     String prefix = namespace.getPrefix();
                     String uri = namespace.getURI();
 
-                    //ignore xml prefix
+                    // ignore xml prefix
                     if ("xml".equals(prefix)) {
                         continue;
                     }
@@ -190,7 +195,6 @@ public abstract class GetDataTransformer extends TransformerBase {
                     attributes.addAttribute("", prefixDef, prefixDef, "", uri);
                 }
 
-
                 start(TJS.GDAS.getLocalPart(), attributes);
                 for (FrameworkInfo framework : catalog.getFrameworks()) {
                     if (framework.getUri().equals(request.getFrameworkURI())) {
@@ -198,7 +202,6 @@ public abstract class GetDataTransformer extends TransformerBase {
                     }
                 }
                 end(TJS.GDAS.getLocalPart());
-
             }
 
             void handleFrameworkKey(AttributeTypeInfo frameworkKey) {
@@ -206,13 +209,17 @@ public abstract class GetDataTransformer extends TransformerBase {
                     return;
                 }
                 start(TJS.FrameworkKey.getLocalPart());
-                //   <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0" />
-                AttributesImpl attributes = attributes(new String[]{
-                                                                           "name", frameworkKey.getName(),
-                                                                           //Arreglar
-                                                                           "type", ClassToXSDMapper.map(frameworkKey.getBinding()),
-                                                                           "length", String.valueOf(frameworkKey.getLength()),
-                                                                           "decimals", "0"});
+                //   <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer"
+                // length="2" decimals="0" />
+                AttributesImpl attributes =
+                        attributes(
+                                new String[] {
+                                    "name", frameworkKey.getName(),
+                                    // Arreglar
+                                    "type", ClassToXSDMapper.map(frameworkKey.getBinding()),
+                                    "length", String.valueOf(frameworkKey.getLength()),
+                                    "decimals", "0"
+                                });
                 element("Column", "", attributes);
                 end(TJS.FrameworkKey.getLocalPart());
             }
@@ -230,26 +237,29 @@ public abstract class GetDataTransformer extends TransformerBase {
             }
 
             /*
-             * <Title>Rural Female Population</Title>
-      <Abstract>Number of females living in rural areas.</Abstract>
-      <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
-      <Values>
-       <Count>
-        <UOM>
-         <ShortForm>people</ShortForm>
-         <LongForm>people</LongForm>
-        </UOM>
-       </Count>
-      </Values>
-     <GetDataRequest xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=rurf_91&amp;AcceptLanguages=en"/>
-             */
+                    * <Title>Rural Female Population</Title>
+             <Abstract>Number of females living in rural areas.</Abstract>
+             <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/population.html</Documentation>
+             <Values>
+              <Count>
+               <UOM>
+                <ShortForm>people</ShortForm>
+                <LongForm>people</LongForm>
+               </UOM>
+              </Count>
+             </Values>
+            <GetDataRequest xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getdata?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;DatasetURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/population_1991&amp;Attributes=rurf_91&amp;AcceptLanguages=en"/>
+                    */
             void handleColumn(ColumnInfo column) {
-                AttributesImpl attributes = attributes(new String[]{
-                                                                           "name", column.getName(),
-                                                                           "type", column.getType(),
-                                                                           "length", String.valueOf(column.getLength()),
-                                                                           "decimals", String.valueOf(column.getDecimals()),
-                                                                           "purpose", "Attribute"});
+                AttributesImpl attributes =
+                        attributes(
+                                new String[] {
+                                    "name", column.getName(),
+                                    "type", column.getType(),
+                                    "length", String.valueOf(column.getLength()),
+                                    "decimals", String.valueOf(column.getDecimals()),
+                                    "purpose", "Attribute"
+                                });
                 start("Column", attributes);
                 element(TJS.Title.getLocalPart(), column.getTitle());
                 element(TJS.Abstract.getLocalPart(), column.getAbstract());
@@ -263,11 +273,16 @@ public abstract class GetDataTransformer extends TransformerBase {
                 end(TJS.Count.getLocalPart());
                 end(TJS.Values.getLocalPart());
 
-                String url = getBaseURL() + "?Service=TJS&Version=1.0&Request=GetData" +
-                                     "&FrameworkURI=" + request.getFrameworkURI() +
-                                     "&datasetURI=" + request.getDatasetURI() +
-                                     "&attributes=" + column.getName();
-                attributes = attributes(new String[]{"xlink:href", url});
+                String url =
+                        getBaseURL()
+                                + "?Service=TJS&Version=1.0&Request=GetData"
+                                + "&FrameworkURI="
+                                + request.getFrameworkURI()
+                                + "&datasetURI="
+                                + request.getDatasetURI()
+                                + "&attributes="
+                                + column.getName();
+                attributes = attributes(new String[] {"xlink:href", url});
                 element(TJS.GetDataRequest.getLocalPart(), "", attributes);
 
                 end("Column");
@@ -292,16 +307,22 @@ public abstract class GetDataTransformer extends TransformerBase {
 
             void handleColumnSet(DatasetInfo dataset) {
                 start(TJS.Columnset.getLocalPart());
-                AttributesImpl attributes = attributes(new String[]{
-                                                                           "complete", "true",
-                                                                           "relationship", "one"});
+                AttributesImpl attributes =
+                        attributes(
+                                new String[] {
+                                    "complete", "true",
+                                    "relationship", "one"
+                                });
                 start(TJS.FrameworkKey.getLocalPart(), attributes);
                 ColumnInfo column = dataset.getColumn(dataset.getGeoKeyField());
-                attributes = attributes(new String[]{
-                                                            "name", column.getName(),
-                                                            "type", column.getType(),
-                                                            "length", String.valueOf(column.getLength()),
-                                                            "decimals", String.valueOf(column.getDecimals())});
+                attributes =
+                        attributes(
+                                new String[] {
+                                    "name", column.getName(),
+                                    "type", column.getType(),
+                                    "length", String.valueOf(column.getLength()),
+                                    "decimals", String.valueOf(column.getDecimals())
+                                });
                 element("Column", "", attributes);
                 end(TJS.FrameworkKey.getLocalPart());
                 handleAttributes(dataset);
@@ -309,14 +330,38 @@ public abstract class GetDataTransformer extends TransformerBase {
             }
 
             void handleRow(RowSet rst, int keyFieldIndex) throws SQLException {
-                start("Row");
-                element(TJS.K.getLocalPart(), rst.getString(keyFieldIndex));
+
                 String[] atts = request.getAttributes().split(",");
-                for (int index = 0; index < atts.length; index++) {
-                    int attributeFieldIndex = rst.findColumn(atts[index]);
-                    element("V", rst.getString(attributeFieldIndex));
+                String filterColumn = null;
+                String filterValue = null;
+                if (request.getFilterColumn() != null) {
+                    filterColumn = (String) ((SimpleAnyType) request.getFilterColumn()).getValue();
                 }
-                end("Row");
+                if (request.getFilterValue() != null) {
+                    filterValue = (String) ((SimpleAnyType) request.getFilterValue()).getValue();
+                }
+
+                Boolean addValue = true;
+                if (filterColumn != null && filterValue != null) {
+                    for (int index = 0; index < atts.length; index++) {
+                        if (atts[index].equalsIgnoreCase(filterColumn)) {
+                            int attributeFieldIndexTmp = rst.findColumn(atts[index]);
+                            if (rst.getString(attributeFieldIndexTmp).equalsIgnoreCase(filterValue)
+                                    == false) {
+                                addValue = false;
+                            }
+                        }
+                    }
+                }
+                if (addValue) {
+                    start("Row");
+                    element(TJS.K.getLocalPart(), rst.getString(keyFieldIndex));
+                    for (int index = 0; index < atts.length; index++) {
+                        int attributeFieldIndex = rst.findColumn(atts[index]);
+                        element("V", rst.getString(attributeFieldIndex));
+                    }
+                    end("Row");
+                }
             }
 
             void handleDataset(DatasetInfo dataset) {
@@ -328,13 +373,20 @@ public abstract class GetDataTransformer extends TransformerBase {
                 element(TJS.Abstract.getLocalPart(), dataset.getDescription());
 
                 if (dataset.getReferenceDate() != null) {
-                    element(TJS.ReferenceDate.getLocalPart(), dataset.getReferenceDate().toString());
+                    element(
+                            TJS.ReferenceDate.getLocalPart(),
+                            dataset.getReferenceDate().toString());
                 }
                 element(TJS.Version.getLocalPart(), String.valueOf(dataset.getVersion()));
                 element(TJS.Documentation.getLocalPart(), dataset.getDocumentation());
 
-                String url = getBaseURL() + "?request=DescribeData&Service=TJS&Version=1.0.0&FrameworkURI=" + request.getFrameworkURI() + "&" + dataset.getDatasetUri();
-                AttributesImpl attributes = attributes(new String[]{"xlink:href", url});
+                String url =
+                        getBaseURL()
+                                + "?request=DescribeData&Service=TJS&Version=1.0.0&FrameworkURI="
+                                + request.getFrameworkURI()
+                                + "&"
+                                + dataset.getDatasetUri();
+                AttributesImpl attributes = attributes(new String[] {"xlink:href", url});
                 element(TJS.DescribeDataRequest.getLocalPart(), "", attributes);
 
                 handleColumnSet(dataset);
@@ -347,7 +399,8 @@ public abstract class GetDataTransformer extends TransformerBase {
                     }
                     end(TJS.Rowset.getLocalPart());
                 } catch (SQLException ex) {
-                    Logger.getLogger(GetDataTransformer.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GetDataTransformer.class.getName())
+                            .log(Level.SEVERE, null, ex);
                 }
                 end(TJS.Dataset.getLocalPart());
             }
@@ -369,21 +422,25 @@ public abstract class GetDataTransformer extends TransformerBase {
                 element(TJS.Title.getLocalPart(), framework.getName());
                 element(TJS.Abstract.getLocalPart(), framework.getDescription());
                 if (framework.getRefererenceDate() != null) {
-                    element(TJS.ReferenceDate.getLocalPart(), framework.getRefererenceDate().toString());
+                    element(
+                            TJS.ReferenceDate.getLocalPart(),
+                            framework.getRefererenceDate().toString());
                 }
                 element(TJS.Version.getLocalPart(), String.valueOf(framework.getVersion()));
                 element(TJS.Documentation.getLocalPart(), framework.getDocumentation());
                 handleFrameworkKey(framework.getFrameworkKey());
                 handleBoundingCoordinates(framework.getBoundingCoordinates());
 
-                String url = getBaseURL() + "?request=DescribeDatasets&Service=TJS&Version=1.0.0&FrameworkURI=" + framework.getUri();
-                AttributesImpl attributes = attributes(new String[]{"xlink:href", url});
+                String url =
+                        getBaseURL()
+                                + "?request=DescribeDatasets&Service=TJS&Version=1.0.0&FrameworkURI="
+                                + framework.getUri();
+                AttributesImpl attributes = attributes(new String[] {"xlink:href", url});
                 element(TJS.DescribeDatasetsRequest.getLocalPart(), "", attributes);
 
                 handleDatasets(framework);
                 end(TJS.Framework.getLocalPart());
             }
-
         }
     }
 }

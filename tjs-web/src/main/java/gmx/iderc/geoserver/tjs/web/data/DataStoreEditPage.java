@@ -7,25 +7,22 @@ package gmx.iderc.geoserver.tjs.web.data;
 import gmx.iderc.geoserver.tjs.catalog.DataStoreInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.data.TJSDataStore;
+import java.io.Serializable;
+import java.util.logging.Level;
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.web.data.store.StoreConnectionFailedInformationPanel;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.util.NullProgressListener;
-
-import java.io.Serializable;
-import java.util.logging.Level;
+import org.geotools.data.util.NullProgressListener;
 
 public class DataStoreEditPage extends AbstractDataStorePage implements Serializable {
 
     public static final String STORE_NAME = "name";
-//    public static final String WS_NAME = "wsName";
+    // public static final String WS_NAME = "wsName";
 
-    /**
-     * Dialog to ask for save confirmation in case the store can't be reached
-     */
+    /** Dialog to ask for save confirmation in case the store can't be reached */
     private GeoServerDialog dialog;
 
     /**
@@ -34,12 +31,14 @@ public class DataStoreEditPage extends AbstractDataStorePage implements Serializ
      * @param parameters
      */
     public DataStoreEditPage(PageParameters parameters) {
-//        String wsName = parameters.getString(WS_NAME);
-        String storeName = parameters.getString(STORE_NAME);
+        // String wsName = parameters.getString(STORE_NAME);
+        String storeName = parameters.get(STORE_NAME).toString();
         DataStoreInfo dsi = getTJSCatalog().getDataStoreByName(storeName);
 
         if (dsi == null) {
-            error(new ParamResourceModel("DataStoreEditPage.notFound", this, "", storeName).getString());
+            error(
+                    new ParamResourceModel("DataStoreEditPage.notFound", this, "", storeName)
+                            .getString());
             setResponsePage(DataStorePage.class);
             return;
         }
@@ -77,26 +76,42 @@ public class DataStoreEditPage extends AbstractDataStorePage implements Serializ
 
         super.initUI(dataStoreInfo);
 
-//        final String wsId = dataStoreInfo.getWorkspace().getId();
-//        workspacePanel.getFormComponent().add(
-//                new CheckExistingResourcesInWorkspaceValidator(dataStoreInfo.getId(), wsId));
+        // final String wsId = dataStoreInfo.getWorkspace().getId();
+        // workspacePanel.getFormComponent().add(
+        // new CheckExistingResourcesInWorkspaceValidator(dataStoreInfo.getId(),
+        // wsId));
     }
 
-    protected final void onSaveDataStore(final DataStoreInfo info,
-                                         final AjaxRequestTarget requestTarget) {
+    protected final void onSaveDataStore(
+            final DataStoreInfo info, final AjaxRequestTarget requestTarget) {
 
         final TJSCatalog catalog = getTJSCatalog();
-//        final ResourcePool resourcePool = catalog.getResourcePool();
-//        resourcePool.clear(info);
+        // final ResourcePool resourcePool = catalog.getResourcePool();
+        // resourcePool.clear(info);
 
         if (info.getEnabled()) {
             // store's enabled, check availability
             TJSDataStore dataStore;
             try {
-//                dataStore = catalog.getResourcePool().getDataStore(info);
-                dataStore = catalog.getDataStore(info.getName()).getTJSDataStore(new NullProgressListener());
-                LOGGER.finer("connection parameters verified for store " + info.getName()
-                                     + ". Got a " + dataStore.getClass().getName());
+                // dataStore = catalog.getResourcePool().getDataStore(info);
+                dataStore =
+                        catalog.getDataStore(info.getId())
+                                .getTJSDataStore(new NullProgressListener());
+                LOGGER.finer(
+                        "connection parameters verified for store "
+                                + info.getName()
+                                + ". Got a "
+                                + dataStore.getClass().getName());
+                try {
+                    // ANTEA : Just for test the connection.
+                    // It Will raise an error if connection error.
+                    info.reloadTJSDataStore();
+                    info.getTJSDataStore(new NullProgressListener()).getAllAvaliableDatasources();
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Error connect to new datastore", e);
+                    throw new IllegalArgumentException(
+                            "Cannot create connection to this datastore configuration");
+                }
                 doSaveStore(info);
                 setResponsePage(DataStorePage.class);
             } catch (Exception e) {
@@ -111,11 +126,13 @@ public class DataStoreEditPage extends AbstractDataStorePage implements Serializ
     }
 
     @SuppressWarnings("serial")
-    private void confirmSaveOnConnectionFailure(final DataStoreInfo info,
-                                                final AjaxRequestTarget requestTarget, final Exception error) {
+    private void confirmSaveOnConnectionFailure(
+            final DataStoreInfo info,
+            final AjaxRequestTarget requestTarget,
+            final Exception error) {
 
-//        getCatalog().getResourcePool().clear(info);
-//        getCatalog().clear(info);
+        // getCatalog().getResourcePool().clear(info);
+        // getCatalog().clear(info);
 
         final String exceptionMessage;
         {
@@ -126,35 +143,39 @@ public class DataStoreEditPage extends AbstractDataStorePage implements Serializ
             exceptionMessage = message;
         }
 
-        dialog.showOkCancel(requestTarget, new GeoServerDialog.DialogDelegate() {
+        dialog.showOkCancel(
+                requestTarget,
+                new GeoServerDialog.DialogDelegate() {
 
-            boolean accepted = false;
+                    boolean accepted = false;
 
-            @Override
-            protected Component getContents(String id) {
-                return new StoreConnectionFailedInformationPanel(id, info.getName(),
-                                                                        exceptionMessage);
-            }
+                    @Override
+                    protected Component getContents(String id) {
+                        return new StoreConnectionFailedInformationPanel(
+                                id, info.getName(), exceptionMessage);
+                    }
 
-            @Override
-            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                doSaveStore(info);
-                accepted = true;
-                return true;
-            }
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        doSaveStore(info);
+                        accepted = true;
+                        return true;
+                    }
 
-            @Override
-            protected boolean onCancel(AjaxRequestTarget target) {
-                return true;
-            }
+                    @Override
+                    protected boolean onCancel(AjaxRequestTarget target) {
+                        // ANTEA : For force to reload UI too
+                        reloadTJSCatalog();
+                        return true;
+                    }
 
-            @Override
-            public void onClose(AjaxRequestTarget target) {
-                if (accepted) {
-                    setResponsePage(DataStorePage.class);
-                }
-            }
-        });
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        if (accepted) {
+                            setResponsePage(DataStorePage.class);
+                        }
+                    }
+                });
     }
 
     private void doSaveStore(final DataStoreInfo info) {
@@ -162,25 +183,30 @@ public class DataStoreEditPage extends AbstractDataStorePage implements Serializ
             final TJSCatalog catalog = getTJSCatalog();
 
             // The namespace may have changed, in which case we need to update the store resources
-//            NamespaceInfo namespace = catalog.getNamespaceByPrefix(info.getWorkspace().getName());
-//            List<FeatureTypeInfo> configuredResources = catalog.getResourcesByStore(info,
-//                    FeatureTypeInfo.class);
-//            for (FeatureTypeInfo alreadyConfigured : configuredResources) {
-//                alreadyConfigured.setNamespace(namespace);
-//            }
+            // NamespaceInfo namespace =
+            // catalog.getNamespaceByPrefix(info.getWorkspace().getName());
+            // List<FeatureTypeInfo> configuredResources =
+            // catalog.getResourcesByStore(info, FeatureTypeInfo.class);
+            // for (FeatureTypeInfo alreadyConfigured : configuredResources) {
+            //      alreadyConfigured.setNamespace(namespace);
+            // }
 
-//            ResourcePool resourcePool = catalog.getResourcePool();
-//            resourcePool.clear(info);
+            // ResourcePool resourcePool = catalog.getResourcePool();
+            // resourcePool.clear(info);
             catalog.save(info);
+            catalog.save();
             // save the resources after saving the store
-//            for (FeatureTypeInfo alreadyConfigured : configuredResources) {
-//                catalog.save(alreadyConfigured);
-//            }
-            LOGGER.finer("Saved store " + info.getName());
+            // for (FeatureTypeInfo alreadyConfigured : configuredResources) {
+            //      catalog.save(alreadyConfigured);
+            // }
+
+            // ANTEA - need to force to reload conf after change it for get the new datastore conf
+            // if you create a new dataSet.
+            // Maybe there is a better solution.
+            reloadTJSCatalog();
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error saving data store to catalog", e);
             throw new IllegalArgumentException("Error saving data store:" + e.getMessage());
         }
     }
-
 }

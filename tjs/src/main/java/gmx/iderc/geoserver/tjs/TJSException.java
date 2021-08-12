@@ -6,10 +6,7 @@ package gmx.iderc.geoserver.tjs;
 
 import org.geoserver.platform.ServiceException;
 
-
-/**
- * WFS application specific exception.
- */
+/** WFS application specific exception. */
 public class TJSException extends ServiceException {
     public TJSException(String message) {
         super(message);

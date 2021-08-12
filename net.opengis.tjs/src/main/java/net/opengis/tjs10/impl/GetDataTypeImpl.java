@@ -12,8 +12,13 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.xml.type.SimpleAnyType;
+import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
+import java.util.Arrays;
+import java.lang.reflect.Array;
 
 /**
  * <!-- begin-user-doc -->
@@ -556,16 +561,36 @@ public class GetDataTypeImpl extends RequestBaseTypeImpl implements GetDataType 
                 setLinkageKeys((String) newValue);
                 return;
             case Tjs10Package.GET_DATA_TYPE__FILTER_COLUMN:
-                setFilterColumn((EObject) newValue);
+                //setFilterColumn((EObject) newValue);
+                //There is a better way to do this ?
+                SimpleAnyType wrapper2 = XMLTypeFactory.eINSTANCE.createSimpleAnyType();
+                wrapper2.setInstanceType(EcorePackage.eINSTANCE.getEString());
+                wrapper2.setValue(newValue);
+                setFilterColumn((EObject) wrapper2);
                 return;
             case Tjs10Package.GET_DATA_TYPE__FILTER_VALUE:
-                setFilterValue((EObject) newValue);
+                //setFilterValue((EObject) newValue);
+                SimpleAnyType wrapper = XMLTypeFactory.eINSTANCE.createSimpleAnyType();
+                wrapper.setInstanceType(EcorePackage.eINSTANCE.getEString());
+                wrapper.setValue(newValue);
+                setFilterValue((EObject) wrapper);
                 return;
             case Tjs10Package.GET_DATA_TYPE__XSL:
-                setXSL((EObject) newValue);
+                //setXSL((EObject) newValue);
+                SimpleAnyType wrapper3 = XMLTypeFactory.eINSTANCE.createSimpleAnyType();
+                wrapper3.setInstanceType(EcorePackage.eINSTANCE.getEString());
+                wrapper3.setValue(newValue);
+                setXSL((EObject) wrapper3);
                 return;
             case Tjs10Package.GET_DATA_TYPE__AID:
-                setAid(((Boolean) newValue).booleanValue());
+                //setAid(((Boolean) newValue).booleanValue());
+                Boolean finalAidValue = null;
+                if(newValue instanceof String){
+                    finalAidValue = Boolean.parseBoolean((String)newValue);
+                }else{
+                    finalAidValue = (Boolean) newValue;
+                }
+                setAid(((Boolean) finalAidValue).booleanValue());
                 return;
         }
         super.eSet(featureID, newValue);

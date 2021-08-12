@@ -8,13 +8,10 @@ package gmx.iderc.geoserver.tjs;
 import gmx.iderc.geoserver.tjs.catalog.FrameworkInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalogPersistence;
-
 import java.io.File;
 import java.util.HashMap;
 
-/**
- * @author root
- */
+/** @author root */
 public class TJSExtensionTestSupport {
 
     static HashMap<String, TJSCatalog> testcatalogs = new HashMap<String, TJSCatalog>();
@@ -33,5 +30,4 @@ public class TJSExtensionTestSupport {
         }
         return catalog;
     }
-
 }

@@ -16,19 +16,6 @@
  */
 package gmx.iderc.geoserver.tjs.map;
 
-import org.geotools.data.ows.Layer;
-import org.geotools.data.wms.WebMapServer;
-import org.geotools.data.wms.request.GetMapRequest;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.GridReaderLayer;
-import org.geotools.referencing.CRS;
-import org.geotools.renderer.lite.RendererUtilities;
-import org.geotools.styling.*;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -37,12 +24,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.GridReaderLayer;
+import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wms.WebMapServer;
+import org.geotools.ows.wms.request.GetMapRequest;
+import org.geotools.referencing.CRS;
+import org.geotools.renderer.lite.RendererUtilities;
+import org.geotools.styling.*;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 
 public class WMSLayer extends GridReaderLayer {
 
-    /**
-     * The default raster style
-     */
+    /** The default raster style */
     static Style STYLE;
 
     static {
@@ -73,7 +70,6 @@ public class WMSLayer extends GridReaderLayer {
         return (WMSCoverageReader) this.reader;
     }
 
-
     public synchronized ReferencedEnvelope getBounds() {
         WMSCoverageReader wmsReader = getReader();
         if (wmsReader != null) {
@@ -93,7 +89,8 @@ public class WMSLayer extends GridReaderLayer {
         BufferedReader br = null;
         try {
             GetMapRequest mapRequest = getReader().mapRequest;
-            InputStream is = getReader().getFeatureInfo(pos, "text/plain", featureCount, mapRequest);
+            InputStream is =
+                    getReader().getFeatureInfo(pos, "text/plain", featureCount, mapRequest);
             br = new BufferedReader(new InputStreamReader(is));
             String line;
             StringBuilder sb = new StringBuilder();
@@ -106,8 +103,7 @@ public class WMSLayer extends GridReaderLayer {
         } catch (Throwable t) {
             throw (IOException) new IOException("Failed to grab feature info").initCause(t);
         } finally {
-            if (br != null)
-                br.close();
+            if (br != null) br.close();
         }
     }
 
@@ -115,7 +111,7 @@ public class WMSLayer extends GridReaderLayer {
      * Retrieves the feature info as a generic input stream, it's the duty of the caller to
      * interpret the contents and ensure the stream is closed feature info format)
      *
-     * @param pos        the position to be checked, in real world coordinates
+     * @param pos the position to be checked, in real world coordinates
      * @param infoFormat The INFO_FORMAT parameter in the GetFeatureInfo request
      * @return
      * @throws IOException
@@ -135,26 +131,39 @@ public class WMSLayer extends GridReaderLayer {
      * @return
      * @throws IOException
      */
-    public InputStream getFeatureInfo(ReferencedEnvelope bbox, int width, int height, int x, int y,
-                                      String infoFormat, int featureCount) throws IOException {
+    public InputStream getFeatureInfo(
+            ReferencedEnvelope bbox,
+            int width,
+            int height,
+            int x,
+            int y,
+            String infoFormat,
+            int featureCount)
+            throws IOException {
         try {
             getReader().initMapRequest(bbox, width, height, null);
-            // we need to convert x/y from the screen to the original coordinates, and then to the ones
+            // we need to convert x/y from the screen to the original coordinates, and then to the
+            // ones
             // that will be used to make the request
-            AffineTransform at = RendererUtilities.worldToScreenTransform(bbox, new Rectangle(width, height));
+            AffineTransform at =
+                    RendererUtilities.worldToScreenTransform(bbox, new Rectangle(width, height));
             Point2D screenPos = new Point2D.Double(x, y);
             Point2D worldPos = new Point2D.Double(x, y);
             at.inverseTransform(screenPos, worldPos);
             DirectPosition2D fromPos = new DirectPosition2D(worldPos.getX(), worldPos.getY());
             DirectPosition2D toPos = new DirectPosition2D();
-            MathTransform mt = CRS.findMathTransform(bbox.getCoordinateReferenceSystem(), getReader().requestCRS, true);
+            MathTransform mt =
+                    CRS.findMathTransform(
+                            bbox.getCoordinateReferenceSystem(), getReader().requestCRS, true);
             mt.transform(fromPos, toPos);
             GetMapRequest mapRequest = getReader().mapRequest;
             return getReader().getFeatureInfo(toPos, infoFormat, featureCount, mapRequest);
         } catch (IOException e) {
             throw e;
         } catch (Throwable t) {
-            throw (IOException) new IOException("Unexpected issue during GetFeatureInfo execution").initCause(t);
+            throw (IOException)
+                    new IOException("Unexpected issue during GetFeatureInfo execution")
+                            .initCause(t);
         }
     }
 
@@ -220,5 +229,4 @@ public class WMSLayer extends GridReaderLayer {
             return false;
         }
     }
-
 }

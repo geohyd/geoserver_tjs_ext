@@ -7,10 +7,9 @@ package gmx.iderc.geoserver.tjs.web.data;
 import gmx.iderc.geoserver.tjs.catalog.DataStoreInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.data.TJSDataStore;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.geotools.util.NullProgressListener;
-
 import java.util.logging.Level;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.geotools.data.util.NullProgressListener;
 
 /**
  * Provides a form to configure a new geotools {@link DataAccess}
@@ -24,7 +23,8 @@ public class DataStoreNewPage extends AbstractDataStorePage {
     /**
      * Creates a new datastore configuration page to create a new datastore of the given type
      *
-     * @param dataStoreFactDisplayName the type of datastore to create, given by its factory display name
+     * @param dataStoreFactDisplayName the type of datastore to create, given by its factory display
+     *     name
      */
     public DataStoreNewPage(final String dataStoreFactDisplayName) {
         super();
@@ -41,7 +41,7 @@ public class DataStoreNewPage extends AbstractDataStorePage {
         // }
 
         DataStoreInfo info = getTJSCatalog().getFactory().newDataStoreInfo();
-//        info.setWorkspace(defaultWs);
+        // info.setWorkspace(defaultWs);
         info.setEnabled(true);
         info.setType(dataStoreFactDisplayName);
 
@@ -55,9 +55,18 @@ public class DataStoreNewPage extends AbstractDataStorePage {
 
         TJSDataStore dataStore;
         try {
+            try {
+                // ANTEA : Just for test the connection. It Will raise an error if connection error
+                info.reloadTJSDataStore();
+                info.getTJSDataStore(new NullProgressListener()).getAllAvaliableDatasources();
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error connect to new datastore", e);
+                throw new IllegalArgumentException(
+                        "Cannot create connection to this datastore configuration");
+            }
             // REVISIT: this may need to be done after saveing the DataStoreInfo
             dataStore = info.getTJSDataStore(new NullProgressListener());
-//            dataStore.dispose();
+            // dataStore.dispose();
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error obtaining new data store", e);
             String message = e.getMessage();
@@ -65,7 +74,7 @@ public class DataStoreNewPage extends AbstractDataStorePage {
                 message = e.getCause().getMessage();
             }
             throw new IllegalArgumentException(
-                                                      "Error creating data store, check the parameters. Error message: " + message);
+                    "Error creating data store, check the parameters. Error message: " + message);
         }
 
         // save a copy, so if NewLayerPage fails we can keep on editing this one without being
@@ -83,10 +92,9 @@ public class DataStoreNewPage extends AbstractDataStorePage {
             }
 
             throw new IllegalArgumentException(
-                                                      "Error creating data store with the provided parameters: " + message);
+                    "Error creating data store with the provided parameters: " + message);
         }
 
         setResponsePage(new DataStorePage());
     }
-
 }

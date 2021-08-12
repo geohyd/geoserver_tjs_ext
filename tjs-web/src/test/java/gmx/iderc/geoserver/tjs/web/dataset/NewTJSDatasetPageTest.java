@@ -6,41 +6,38 @@
 package gmx.iderc.geoserver.tjs.web.dataset;
 
 import gmx.iderc.geoserver.tjs.web.TJSWicketTestSupport;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * @author root
- */
+/** @author root */
 public class NewTJSDatasetPageTest extends TJSWicketTestSupport {
 
-    
     protected void setUpInternal() throws Exception {
         try {
             login();
             tester.startPage(new NewTJSDatasetPage());
         } catch (Exception ex) {
-            Logger.getLogger(NewTJSDatasetPageTest.class.getName()).log(Level.SEVERE, "Excepcion en setUpInternal(): " + ex.getMessage());
+            Logger.getLogger(NewTJSDatasetPageTest.class.getName())
+                    .log(Level.SEVERE, "Excepcion en setUpInternal(): " + ex.getMessage());
             throw ex;
         }
-//        tester.assertRenderedPage(FrameworkPage.class);
-//        tester.assertNoErrorMessage();
+        //        tester.assertRenderedPage(FrameworkPage.class);
+        //        tester.assertNoErrorMessage();
     }
-
 
     public void testBasicActions() {
 
-//        if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()){
-//            Logger.getLogger(FrameworkPageTest.class.getName()).info("No se ha autenticado");
-//            login();
-//        }
+        //        if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()){
+        //            Logger.getLogger(FrameworkPageTest.class.getName()).info("No se ha
+        // autenticado");
+        //            login();
+        //        }
 
         // test that we can load the page
-        //System.out.println(tester.getLastRenderedPage().toString(true));
+        // System.out.println(tester.getLastRenderedPage().toString(true));
         // check it has one framework
-//        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
-//        assertEquals(2, table.getDataProvider().size());
+        //        GeoServerTablePanel table = (GeoServerTablePanel)
+        // tester.getComponentFromLastRenderedPage("table");
+        //        assertEquals(2, table.getDataProvider().size());
     }
-
 }

@@ -9,9 +9,7 @@ import gmx.iderc.geoserver.tjs.TJSExtension;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalogObject;
 import org.apache.wicket.model.IModel;
 
-/**
- * @author root
- */
+/** @author root */
 public class TJSCatalogObjectDetachableModel implements IModel {
     transient TJSCatalogObject catalogObject;
     String id;
@@ -35,5 +33,4 @@ public class TJSCatalogObjectDetachableModel implements IModel {
     public void detach() {
         this.catalogObject = null;
     }
-
 }

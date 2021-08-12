@@ -8,8 +8,6 @@ import gmx.iderc.geoserver.tjs.catalog.*;
 import gmx.iderc.geoserver.tjs.data.TJSDataStore;
 import gmx.iderc.geoserver.tjs.data.TJSDatasource;
 import gmx.iderc.geoserver.tjs.data.xml.SQLToXSDMapper;
-import org.geotools.util.NullProgressListener;
-
 import java.io.Serializable;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -20,10 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.data.util.NullProgressListener;
 
-/**
- * @author root
- */
+/** @author root */
 
 // TODO: THijs: should this be serializable?
 
@@ -79,8 +76,8 @@ public class DatasetInfoImpl extends TJSCatalogObjectImpl implements DatasetInfo
         setDescription("Default Dataset for testing propose.");
     }
 
-    //TODO: sobreescribir aqui no hace falta?
-    //Alvaro Javier Fuentes Suarez, 11:30 p.m. 1/8/13
+    // TODO: sobreescribir aqui no hace falta?
+    // Alvaro Javier Fuentes Suarez, 11:30 p.m. 1/8/13
     @Override
     public void accept(TJSCatalogVisitor visitor) {
         visitor.visit((DatasetInfo) this);
@@ -182,11 +179,13 @@ public class DatasetInfoImpl extends TJSCatalogObjectImpl implements DatasetInfo
 
     public TJSDatasource getTJSDatasource() {
         TJSDataStore store = getDataStore().getTJSDataStore(new NullProgressListener());
-        TJSDatasource tjsDatasource = store.getDatasource(datasetName, getDataStore().getConnectionParameters())   ;
+        TJSDatasource tjsDatasource =
+                store.getDatasource(datasetName, getDataStore().getConnectionParameters());
         return tjsDatasource;
     }
-    private void updateColumns() throws SQLException {
 
+    private void updateColumns() throws SQLException {
+        // AnteaGroup : Add Date / Time / Timestamp to the list
         ResultSetMetaData rstMeta = getTJSDatasource().getResultSetMetaData();
         SQLToXSDMapper mapper = new SQLToXSDMapper();
         for (int i = 0; i < rstMeta.getColumnCount(); i++) {
@@ -202,24 +201,30 @@ public class DatasetInfoImpl extends TJSCatalogObjectImpl implements DatasetInfo
                 case Types.DOUBLE:
                 case Types.FLOAT:
                 case Types.NUMERIC:
-                case Types.REAL: {
-                    column.setDecimals(rstMeta.getScale(i + 1));
-                    column.setLength(rstMeta.getColumnDisplaySize(i + 1));
-                    columns.put(column.getName(), column);
-                    break;
-                }
+                case Types.REAL:
+                    {
+                        column.setDecimals(rstMeta.getScale(i + 1));
+                        column.setLength(rstMeta.getColumnDisplaySize(i + 1));
+                        columns.put(column.getName(), column);
+                        break;
+                    }
                 case Types.VARCHAR:
                 case Types.NVARCHAR:
+                case Types.DATE:
+                case Types.TIME:
+                case Types.TIME_WITH_TIMEZONE:
+                case Types.TIMESTAMP:
+                case Types.TIMESTAMP_WITH_TIMEZONE:
                 case Types.CHAR:
-                case Types.LONGNVARCHAR: {
-                    column.setDecimals(0);
-                    column.setLength(rstMeta.getPrecision(i + 1));
-                    columns.put(column.getName(), column);
-                    break;
-                }
+                case Types.LONGNVARCHAR:
+                    {
+                        column.setDecimals(0);
+                        column.setLength(rstMeta.getPrecision(i + 1));
+                        columns.put(column.getName(), column);
+                        break;
+                    }
             }
         }
-
     }
 
     public List<ColumnInfo> getColumns() {
@@ -264,6 +269,4 @@ public class DatasetInfoImpl extends TJSCatalogObjectImpl implements DatasetInfo
     public void setAutoJoin(boolean autoJoin) {
         autojoin = autoJoin;
     }
-
 }
-

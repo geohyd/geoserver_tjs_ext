@@ -42,7 +42,14 @@ public class Postgre_TJSDataStoreFactory extends JDBC_TJSDataStoreFactory {
         String host = (String) HOST.lookUp(params);
         String db = (String) DATABASE.lookUp(params);
         int port = ((Integer) PORT.lookUp(params)).intValue();
-        return "jdbc:postgresql://" + host + ":" + port + "/" + db;
+        
+        String url = "jdbc:postgresql://" + host + ":" + port + "/" + db;
+        
+        String schema = (String) SCHEMA.lookUp(params);
+        if (schema != null){
+            url += "?currentSchema=" + schema;
+        }
+        return url;
     }
 
 }

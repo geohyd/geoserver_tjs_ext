@@ -5,30 +5,22 @@
 package gmx.iderc.geoserver.tjs;
 
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
-import net.opengis.tjs10.DescribeFrameworksType;
-import net.opengis.tjs10.VersionType2;
-import org.geoserver.ows.util.RequestUtils;
-import org.geotools.xml.transform.TransformerBase;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.opengis.tjs10.DescribeFrameworksType;
+import net.opengis.tjs10.VersionType2;
+import org.geoserver.ows.util.RequestUtils;
+import org.geotools.xml.transform.TransformerBase;
 
-
-/**
- * Web Feature Service DescribeFeatureType operation.
- */
+/** Web Feature Service DescribeFeatureType operation. */
 public class DescribeFrameworks {
-    /**
-     * Catalog reference
-     */
+    /** Catalog reference */
     private TJSCatalog catalog;
 
-    /**
-     * TJS service
-     */
+    /** TJS service */
     private TJSInfo tjs;
 
     public DescribeFrameworks(TJSInfo tjs, TJSCatalog catalog) {
@@ -60,12 +52,11 @@ public class DescribeFrameworks {
         return versions;
     }
 
-    public TransformerBase run(DescribeFrameworksType request)
-            throws TJSException {
+    public TransformerBase run(DescribeFrameworksType request) throws TJSException {
 
         List<String> provided = new ArrayList<String>();
         provided.add("1.0.0");
-//        provided.add("1.1.0");
+        // provided.add("1.1.0");
         List<String> requested = new ArrayList<String>();
 
         if (request.getVersion() != null)
@@ -82,7 +73,8 @@ public class DescribeFrameworks {
             throw new TJSException("Could not understand version:" + version);
         }
         try {
-            dfTransformer.setEncoding(Charset.forName(tjs.getGeoServer().getGlobal().getCharset()));
+            dfTransformer.setEncoding(
+                    Charset.forName(tjs.getGeoServer().getGlobal().getSettings().getCharset()));
         } catch (Exception ex) {
             Logger.getLogger(GetCapabilities.class.getName()).log(Level.SEVERE, ex.getMessage());
         }

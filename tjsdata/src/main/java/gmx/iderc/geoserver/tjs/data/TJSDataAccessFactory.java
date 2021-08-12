@@ -6,7 +6,7 @@
 package gmx.iderc.geoserver.tjs.data;
 
 import org.geotools.data.DataAccessFactory.Param;
-import org.geotools.factory.Factory;
+import org.geotools.util.factory.Factory;
 
 import java.io.IOException;
 import java.io.Serializable;

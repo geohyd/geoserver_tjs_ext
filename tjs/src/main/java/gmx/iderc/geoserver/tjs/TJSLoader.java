@@ -11,13 +11,11 @@ public class TJSLoader extends LegacyServiceLoader<TJSInfo> {
         return TJSInfo.class;
     }
 
-    public TJSInfo load(LegacyServicesReader reader, GeoServer geoServer)
-            throws Exception {
+    public TJSInfo load(LegacyServicesReader reader, GeoServer geoServer) throws Exception {
         TJSInfoImpl tjs = new TJSInfoImpl();
         tjs.setId("tjs");
         tjs.setGeoServer(geoServer);
         tjs.getVersions().add(new Version("1.0.0"));
         return tjs;
     }
-
 }

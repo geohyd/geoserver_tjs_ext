@@ -12,6 +12,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <gs.version>2.16.1</gs.version>
+        <gt.version>22.1</gt.version>
+        <tjs.version>1.1.8-SNAPSHOT</tjs.version>
+    </properties>
 
     <!--parent>
         <groupId>org.geotools.xsd</groupId>
@@ -24,7 +29,7 @@
     <!-- =========================================================== -->
     <groupId>org.geotools.xsd</groupId>
     <artifactId>gt-xsd-tjs</artifactId>
-    <version>13.3</version>
+    <version>22.1</version>
     <packaging>jar</packaging>
     <name>TJS XML Support(xsd-tjs)</name>
 
@@ -52,9 +57,9 @@
   <repository>
     <id>boundless</id>
     <name>Boundless Maven Repository</name>
-    <url>http://repo.boundlessgeo.com/main</url>
+    <url>https://repo.osgeo.org/repository/release/</url>
     <snapshots>
-    <enabled>true</enabled>
+      <enabled>true</enabled>
     </snapshots>
   </repository>
 
@@ -147,17 +152,17 @@
         <dependency>
             <groupId>org.geotools.ogc</groupId>
             <artifactId>net.opengis.tjs</artifactId>
-            <version>${project.version}</version>
+            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools.xsd</groupId>
             <artifactId>gt-xsd-core</artifactId>
-            <version>${project.version}</version>
+            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools.xsd</groupId>
             <artifactId>gt-xsd-ows</artifactId>
-            <version>${project.version}</version>
+            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools.maven</groupId>
@@ -170,7 +175,7 @@
             <plugin>
                 <groupId>org.geotools.maven</groupId>
                 <artifactId>xmlcodegen</artifactId>
-                <version>${project.version}</version>
+                <version>13.3</version>
                 <configuration>
                     <schemaLocation>tjsAll.xsd</schemaLocation>
                     <schemaSourceDirectory>${basedir}/src/main/resources/org/geotools/tjs/v1_0</schemaSourceDirectory>
@@ -189,7 +194,7 @@
                     <generateConfiguration>true</generateConfiguration>
                     <!--generateTypeBindings>true</generateTypeBindings-->
                     <destinationPackage>org.geotools.tjs.bindings</destinationPackage>
-                    <complexBindingBaseClass>org.geotools.xml.AbstractComplexEMFBinding</complexBindingBaseClass>
+                    <complexBindingBaseClass>org.geotools.xsd.AbstractComplexEMFBinding</complexBindingBaseClass>
                     <bindingConstructorArguments>
                         <bindingConstructorArgument>
                             <name>factory</name>
@@ -222,16 +227,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
                 <inherited>true</inherited>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
                     <attach>true</attach>
                 </configuration>

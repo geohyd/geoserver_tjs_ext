@@ -7,25 +7,17 @@ package gmx.iderc.geoserver.tjs.catalog;
 
 import com.thoughtworks.xstream.XStream;
 import gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogImpl;
-// for 2.2.x branch?
-// import org.vfny.geoserver.global.GeoserverDataDirectory;
-
-//for later branches
-import org.geoserver.catalog.Catalog;
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.config.GeoServerInfo;
-import org.geoserver.platform.GeoServerExtensions;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
 
-/**
- * @author root
- */
+/** @author root */
 public class TJSCatalogPersistence {
 
     static final Logger logger = Logger.getLogger(TJSCatalogPersistence.class.getName());
@@ -42,7 +34,8 @@ public class TJSCatalogPersistence {
     }
 
     public static File getGeoserverDataDirectory() {
-        // TODO: how to get the Geoserverdatadriectory properly? Seems to be changed for Geoserver 2.6.x or earlier
+        // TODO: how to get the Geoserverdatadriectory properly? Seems to be changed for Geoserver
+        // 2.6.x or earlier
         // return GeoserverDataDirectory.getGeoserverDataDirectory();
         Catalog cat = (Catalog) GeoServerExtensions.bean("catalog");
         GeoServerDataDirectory dd = new GeoServerDataDirectory(cat.getResourceLoader());
@@ -54,10 +47,12 @@ public class TJSCatalogPersistence {
             File persistenceFile = getPersistenceFile(dataDirectory);
             logger.log(Level.INFO, "Cargando configuracion desde: " + persistenceFile.toString());
             if (!persistenceFile.exists()) {
-                logger.log(Level.INFO, "No existe archivo de configuracion, escribiendo valores por defecto");
+                logger.log(
+                        Level.INFO,
+                        "No existe archivo de configuracion, escribiendo valores por defecto");
                 persistenceFile.createNewFile();
                 TJSCatalogImpl catalog = new TJSCatalogImpl();
-                //catalog.loadDefault();
+                // catalog.loadDefault();
                 save(catalog, persistenceFile);
                 return catalog;
             } else {
@@ -91,10 +86,8 @@ public class TJSCatalogPersistence {
         }
     }
 
-
     public static void save(TJSCatalog catalog) {
         File pf = getPersistenceFile(getGeoserverDataDirectory());
         save(catalog, pf);
     }
-
 }

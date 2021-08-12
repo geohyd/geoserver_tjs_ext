@@ -4,7 +4,11 @@
  */
 package gmx.iderc.geoserver.tjs;
 
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
+import java.util.*;
+import java.util.logging.Logger;
 import net.opengis.tjs10.GetCapabilitiesType;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -26,55 +30,40 @@ import org.opengis.filter.capability.FunctionName;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
-import java.util.*;
-import java.util.logging.Logger;
-
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-
 /**
- * Based on the <code>org.geotools.xml.transform</code> framework, does the job
- * of encoding a TJS 1.0 Capabilities document.
+ * Based on the <code>org.geotools.xml.transform</code> framework, does the job of encoding a TJS
+ * 1.0 Capabilities document.
  *
  * @author Jos'e Luis Capote
  */
 public abstract class CapabilitiesTransformer extends TransformerBase {
 
-    /**
-     * logger
-     */
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(CapabilitiesTransformer.class.getPackage().getName());
-    /**
-     * identifer of a http get + post request
-     */
+    /** logger */
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(
+                    CapabilitiesTransformer.class.getPackage().getName());
+    /** identifer of a http get + post request */
     private static final String HTTP_GET = "Get";
+
     private static final String HTTP_POST = "Post";
-    /**
-     * wfs namespace
-     */
+    /** wfs namespace */
     protected static final String TJS_PREFIX = "tjs";
+
     protected static final String TJS_URI = "http://www.opengis.net/tjs";
-    /**
-     * xml schema namespace + prefix
-     */
+    /** xml schema namespace + prefix */
     protected static final String XSI_PREFIX = "xsi";
+
     protected static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
-    /**
-     * filter namesapce + prefix
-     */
+    /** filter namesapce + prefix */
     protected static final String OGC_PREFIX = "ogc";
+
     protected static final String OGC_URI = OGC.NAMESPACE;
-    /**
-     * wfs service
-     */
+    /** wfs service */
     protected TJSInfo tjs;
-    /**
-     * catalog
-     */
+    /** catalog */
     protected TJSCatalog catalog;
 
-    /**
-     * Creates a new CapabilitiesTransformer object.
-     */
+    /** Creates a new CapabilitiesTransformer object. */
     public CapabilitiesTransformer(TJSInfo tjs, TJSCatalog catalog) {
         super();
         setNamespaceDeclarationEnabled(false);
@@ -85,11 +74,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
     /**
      * It turns out that the he TJS 1.0 specification don't actually support an updatesequence-based
-     * getcapabilities operation.  There's no mention of an updatesequence request parameter in the getcapabilities
-     * operation, and there's no normative behaviour description for what the updatesequence parameter in the
-     * capabilities document should *do*.
-     * <p/>
-     * So this behaviour is not used right now, at all (as of oct 2012)
+     * getcapabilities operation. There's no mention of an updatesequence request parameter in the
+     * getcapabilities operation, and there's no normative behaviour description for what the
+     * updatesequence parameter in the capabilities document should *do*.
+     *
+     * <p>So this behaviour is not used right now, at all (as of oct 2012)
      *
      * @param request
      * @throws ServiceException
@@ -100,7 +89,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             try {
                 reqUS = Long.parseLong(request.getUpdateSequence());
             } catch (NumberFormatException nfe) {
-                throw new ServiceException("GeoServer only accepts numbers in the updateSequence parameter");
+                throw new ServiceException(
+                        "GeoServer only accepts numbers in the updateSequence parameter");
             }
         }
         GeoServer geoServer = tjs.getGeoServer();
@@ -109,24 +99,30 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         }
         long geoUS = geoServer.getGlobal().getUpdateSequence();
         if (reqUS > geoUS) {
-            throw new ServiceException("Client supplied an updateSequence that is greater than the current sever updateSequence", "InvalidUpdateSequence");
+            throw new ServiceException(
+                    "Client supplied an updateSequence that is greater than the current sever updateSequence",
+                    "InvalidUpdateSequence");
         }
         if (reqUS == geoUS) {
-            throw new ServiceException("WFS capabilities document is current (updateSequence = " + geoUS + ")", "CurrentUpdateSequence");
+            throw new ServiceException(
+                    "WFS capabilities document is current (updateSequence = " + geoUS + ")",
+                    "CurrentUpdateSequence");
         }
     }
 
     Set<FunctionName> getAvailableFunctionNames() {
-        //Sort them up for easier visual inspection
-        SortedSet sortedFunctions = new TreeSet(new Comparator() {
+        // Sort them up for easier visual inspection
+        SortedSet sortedFunctions =
+                new TreeSet(
+                        new Comparator() {
 
-            public int compare(Object o1, Object o2) {
-                String n1 = ((FunctionName) o1).getName();
-                String n2 = ((FunctionName) o2).getName();
+                            public int compare(Object o1, Object o2) {
+                                String n1 = ((FunctionName) o1).getName();
+                                String n2 = ((FunctionName) o2).getName();
 
-                return n1.toLowerCase().compareTo(n2.toLowerCase());
-            }
-        });
+                                return n1.toLowerCase().compareTo(n2.toLowerCase());
+                            }
+                        });
 
         Set<FunctionFactory> factories = CommonFactoryFinder.getFunctionFactories(null);
         for (FunctionFactory factory : factories) {
@@ -163,10 +159,10 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             protected String getBaseURL() {
                 try {
                     Request owsRequest = ((ThreadLocal<Request>) Dispatcher.REQUEST).get();
-                    if (owsRequest != null){
+                    if (owsRequest != null) {
                         return owsRequest.getHttpRequest().getRequestURL().toString();
-                    }else{
-                        //ocurre cuando se realizan los test
+                    } else {
+                        // ocurre cuando se realizan los test
                         return "http://localhost:8080/geoserver/";
                     }
                 } catch (Exception ex) {
@@ -179,25 +175,39 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 verifyUpdateSequence(request);
 
-                AttributesImpl attributes = attributes(new String[]{
-                                                                           "version", "1.0",
-                                                                           "lang", "es",
-                                                                           "service", "TJS",
-                                                                           "capabilities", "http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities",
-                                                                           "xmlns:xsi", XSI_URI,
-                                                                           "xmlns", TJS.NAMESPACE,
-                                                                           "xmlns:ows", OWS.NAMESPACE, //"xmlns:gml", GML.NAMESPACE,
-                                                                           "xmlns:ogc", OGC.NAMESPACE, "xmlns:xlink", XLINK.NAMESPACE,
-                                                                           "xsi:schemaLocation", TJS.NAMESPACE + " "
-                                                                                                         + "http://schemas.opengis.net/tjs/1.0/tjsDescribeDatasets_response.xsd"
-                });
+                AttributesImpl attributes =
+                        attributes(
+                                new String[] {
+                                    "version",
+                                    "1.0",
+                                    "lang",
+                                    "es",
+                                    "service",
+                                    "TJS",
+                                    "capabilities",
+                                    "http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities",
+                                    "xmlns:xsi",
+                                    XSI_URI,
+                                    "xmlns",
+                                    TJS.NAMESPACE,
+                                    "xmlns:ows",
+                                    OWS.NAMESPACE, // "xmlns:gml", GML.NAMESPACE,
+                                    "xmlns:ogc",
+                                    OGC.NAMESPACE,
+                                    "xmlns:xlink",
+                                    XLINK.NAMESPACE,
+                                    "xsi:schemaLocation",
+                                    TJS.NAMESPACE
+                                            + " "
+                                            + "http://schemas.opengis.net/tjs/1.0/tjsDescribeDatasets_response.xsd"
+                                });
 
                 List<NamespaceInfo> namespaces = catalog.getNamespaces();
                 for (NamespaceInfo namespace : namespaces) {
                     String prefix = namespace.getPrefix();
                     String uri = namespace.getURI();
 
-                    //ignore xml prefix
+                    // ignore xml prefix
                     if ("xml".equals(prefix)) {
                         continue;
                     }
@@ -208,8 +218,12 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
 
                 if (tjs.getGeoServer() != null) {
-                    attributes.addAttribute("", "updateSequence", "updateSequence", "",
-                                                   tjs.getGeoServer().getGlobal().getUpdateSequence() + "");
+                    attributes.addAttribute(
+                            "",
+                            "updateSequence",
+                            "updateSequence",
+                            "",
+                            tjs.getGeoServer().getGlobal().getUpdateSequence() + "");
                 }
 
                 start(TJS.Capabilities.getLocalPart(), attributes);
@@ -217,9 +231,9 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 serviceIdentification();
                 serviceProvider(tjs.getGeoServer());
                 operationsMetadata();
-//                featureTypeList();
-                //supportsGMLObjectTypeList();
-//                filterCapabilities();
+                // featureTypeList();
+                // supportsGMLObjectTypeList();
+                // filterCapabilities();
 
                 end(TJS.Capabilities.getLocalPart());
             }
@@ -245,7 +259,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 start(OWS.ServiceProvider.getLocalPart());
 
                 if (gs != null) {
-                    ContactInfo contact = gs.getGlobal().getContact();
+                    // ContactInfo contact = gs.getGlobal().getContact();
+                    ContactInfo contact = gs.getGlobal().getSettings().getContact();
                     element("ows:ProviderName", contact.getContactOrganization());
                     start("ows:ServiceContact");
                     element("ows:IndividualName", contact.getContactPerson());
@@ -281,61 +296,61 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 getDescribeData();
                 getGetData();
 
-
-                //getGmlObject();
+                // getGmlObject();
 
                 if (tjs.getServiceLevel().contains(TJSInfo.ServiceLevel.BASIC)) {
-//                    lockFeature();
-//                    getFeatureWithLock();
+                    // lockFeature();
+                    // getFeatureWithLock();
                 }
 
                 if (tjs.getServiceLevel().contains(TJSInfo.ServiceLevel.COMPLETE)) {
-//                    transaction();
+                    // transaction();
                 }
 
                 end("ows:OperationsMetadata");
             }
 
             void getCapabilities() {
-                Map.Entry[] parameters = new Map.Entry[]{
-                                                                parameter("AcceptVersions", new String[]{"1.0.0"}),
-                                                                parameter("AcceptFormats", new String[]{"text/xml"})
-                };
+                Map.Entry[] parameters =
+                        new Map.Entry[] {
+                            parameter("AcceptVersions", new String[] {"1.0.0"}),
+                            parameter("AcceptFormats", new String[] {"text/xml"})
+                        };
                 operation("GetCapabilities", parameters, true, true);
             }
 
             void getDescribeFrameworks() {
-                Map.Entry[] parameters = new Map.Entry[]{};
+                Map.Entry[] parameters = new Map.Entry[] {};
                 operation("DescribeFrameworks", parameters, true, true);
             }
 
             void getDescribeKey() {
-                Map.Entry[] parameters = new Map.Entry[]{};
+                Map.Entry[] parameters = new Map.Entry[] {};
                 operation("DescribeKey", parameters, true, true);
             }
 
             void getDescribeDatasets() {
-                Map.Entry[] parameters = new Map.Entry[]{};
+                Map.Entry[] parameters = new Map.Entry[] {};
                 operation("DescribeDatasets", parameters, true, true);
             }
 
             void getDescribeData() {
-                Map.Entry[] parameters = new Map.Entry[]{};
+                Map.Entry[] parameters = new Map.Entry[] {};
                 operation("DescribeData", parameters, true, true);
             }
 
             void getGetData() {
-                Map.Entry[] parameters = new Map.Entry[]{};
+                Map.Entry[] parameters = new Map.Entry[] {};
                 operation("GetData", parameters, true, true);
             }
 
             void getDescribeJoinAbilities() {
-                Map.Entry[] parameters = new Map.Entry[]{};
+                Map.Entry[] parameters = new Map.Entry[] {};
                 operation("DescribeJoinAbilities", parameters, true, true);
             }
 
             void getJoinData() {
-                Map.Entry[] parameters = new Map.Entry[]{};
+                Map.Entry[] parameters = new Map.Entry[] {};
                 operation("JoinData", parameters, true, true);
             }
 
@@ -359,31 +374,36 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
             }
 
-            void operation(String name, Map.Entry[] parameters, Map.Entry[] constraints, boolean get, boolean post) {
-                start("ows:Operation", attributes(new String[]{"name", name}));
+            void operation(
+                    String name,
+                    Map.Entry[] parameters,
+                    Map.Entry[] constraints,
+                    boolean get,
+                    boolean post) {
+                start("ows:Operation", attributes(new String[] {"name", name}));
 
-                //dcp
+                // dcp
                 start("ows:DCP");
                 start("ows:HTTP");
 
                 String serviceURL = buildURL(getBaseURL(), "tjs", null, URLType.SERVICE);
                 if (get) {
-                    element("ows:Get", null, attributes(new String[]{"xlink:href", serviceURL}));
+                    element("ows:Get", null, attributes(new String[] {"xlink:href", serviceURL}));
                 }
 
                 if (post) {
-                    element("ows:Post", null, attributes(new String[]{"xlink:href", serviceURL}));
+                    element("ows:Post", null, attributes(new String[] {"xlink:href", serviceURL}));
                 }
 
                 end("ows:HTTP");
                 end("ows:DCP");
 
-                //parameters
+                // parameters
                 for (int i = 0; i < parameters.length; i++) {
                     String pname = (String) parameters[i].getKey();
                     String[] pvalues = (String[]) parameters[i].getValue();
 
-                    start("ows:Parameter", attributes(new String[]{"name", pname}));
+                    start("ows:Parameter", attributes(new String[] {"name", pname}));
 
                     for (int j = 0; j < pvalues.length; j++) {
                         element("ows:Value", pvalues[j]);
@@ -392,12 +412,12 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     end("ows:Parameter");
                 }
 
-                //constraints
+                // constraints
                 for (int i = 0; constraints != null && i < constraints.length; i++) {
                     String cname = (String) constraints[i].getKey();
                     String[] cvalues = (String[]) constraints[i].getValue();
 
-                    start("ows:Constraint", attributes(new String[]{"name", cname}));
+                    start("ows:Constraint", attributes(new String[] {"name", cname}));
 
                     for (int j = 0; j < cvalues.length; j++) {
                         element("ows:Value", cvalues[j]);
@@ -410,7 +430,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             }
 
             /**
-             * @see {@link #operation(String, java.util.Map.Entry[], java.util.Map.Entry[], boolean, boolean)}
+             * @see {@link #operation(String, java.util.Map.Entry[], java.util.Map.Entry[], boolean,
+             *     boolean)}
              */
             void operation(String name, Map.Entry[] parameters, boolean get, boolean post) {
                 operation(name, parameters, null, get, post);

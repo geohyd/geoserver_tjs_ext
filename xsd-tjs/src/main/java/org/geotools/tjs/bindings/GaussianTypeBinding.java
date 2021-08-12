@@ -4,8 +4,8 @@ package org.geotools.tjs.bindings;
 import net.opengis.tjs10.GaussianType;
 import net.opengis.tjs10.Tjs10Factory;
 import org.geotools.tjs.TJS;
-import org.geotools.xml.AbstractSimpleBinding;
-import org.geotools.xml.InstanceComponent;
+import org.geotools.xsd.AbstractSimpleBinding;
+import org.geotools.xsd.InstanceComponent;
 
 import javax.xml.namespace.QName;
 

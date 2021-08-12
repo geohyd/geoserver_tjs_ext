@@ -125,8 +125,10 @@ public class JDBC_TJSDatasource implements TJSDatasource {
 
     private String getSQL() throws IOException {
         String dsName="";
+        String schemaName="";
         try {
            dsName = (String) JDBC_TJSDataStoreFactory.DATASOURCENAME.lookUp(params);
+           schemaName = (String) JDBC_TJSDataStoreFactory.SCHEMA.lookUp(params);
         }  catch (Exception e) {
             LOGGER.severe(e.getMessage());
         }

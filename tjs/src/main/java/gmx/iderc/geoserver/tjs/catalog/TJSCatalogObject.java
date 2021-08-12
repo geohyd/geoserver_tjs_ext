@@ -7,9 +7,7 @@ package gmx.iderc.geoserver.tjs.catalog;
 
 import org.opengis.feature.type.Name;
 
-/**
- * @author root
- */
+/** @author root */
 public interface TJSCatalogObject {
 
     String getId();

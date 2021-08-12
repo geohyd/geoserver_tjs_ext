@@ -71,7 +71,6 @@ public class GDAS_Importer_Thread extends Thread {
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Error in creation of GDAS cache table for " + tableName);
             return null;
         }
         return tableName;

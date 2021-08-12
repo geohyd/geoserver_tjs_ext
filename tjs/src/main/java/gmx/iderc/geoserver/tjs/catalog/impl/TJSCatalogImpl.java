@@ -9,49 +9,45 @@ import gmx.iderc.geoserver.tjs.catalog.*;
 import gmx.iderc.geoserver.tjs.data.TJSDataAccessFactory;
 import gmx.iderc.geoserver.tjs.data.TJSDataAccessFinder;
 import gmx.iderc.geoserver.tjs.data.TJSDataStore;
+import java.util.*;
 import org.apache.commons.collections.MultiHashMap;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.util.NullProgressListener;
+import org.geotools.data.util.NullProgressListener;
 
-import java.util.*;
-
-/**
- * @author root
- */
+/** @author root */
 public class TJSCatalogImpl implements TJSCatalog {
 
-//    private Catalog catalog;
+    //    private Catalog catalog;
 
     protected Map<String, FrameworkInfo> frameworks = new HashMap<String, FrameworkInfo>();
     protected Map<String, DataStoreInfo> dataStores = new HashMap<String, DataStoreInfo>();
     protected Map<String, DatasetInfo> dataSets = new HashMap<String, DatasetInfo>();
-    //nuevo!, Alvaro Javier
-    //aqui se guardan los joined maps con llave <FrameworkURI>+<GetDataURL>
-    //hasta hora en la implementación no se tiene en cuenta el frameworkURI, que siempre viene vacío,
-    //lo que hace que la llave sólo dependa del GetDataURL, :)
+    // nuevo!, Alvaro Javier
+    // aqui se guardan los joined maps con llave <FrameworkURI>+<GetDataURL>
+    // hasta hora en la implementación no se tiene en cuenta el frameworkURI, que siempre viene
+    // vacío,
+    // lo que hace que la llave sólo dependa del GetDataURL, :)
     protected Map<String, JoinedMapInfo> joinedMaps = new HashMap<String, JoinedMapInfo>();
 
+    protected transient MultiHashMap storeDataSets = new MultiHashMap();
+    protected transient MultiHashMap frameworkDataSets = new MultiHashMap();
 
-    transient protected MultiHashMap storeDataSets = new MultiHashMap();
-    transient protected MultiHashMap frameworkDataSets = new MultiHashMap();
-
-
-    transient protected Map<String, TJSDataAccessFactory> dataStoreFactories = new HashMap<String, TJSDataAccessFactory>();
-
+    protected transient Map<String, TJSDataAccessFactory> dataStoreFactories =
+            new HashMap<String, TJSDataAccessFactory>();
 
     public Catalog getGeoserverCatalog() {
         return (Catalog) GeoServerExtensions.bean("catalog");
     }
 
     public void add(FrameworkInfo frameworkInfo) {
-//        if ( frameworkInfo.getWorkspace() == null ) {
-//            frameworkInfo.setWorkspace( getCatalog().getDefaultWorkspace() );
-//        }
+        // if ( frameworkInfo.getWorkspace() == null ) {
+        //      frameworkInfo.setWorkspace( getCatalog().getDefaultWorkspace() );
+        // }
 
-//        validate(store, true);
+        // validate(store, true);
 
         synchronized (frameworks) {
             frameworks.put(frameworkInfo.getName(), frameworkInfo);
@@ -67,7 +63,9 @@ public class TJSCatalogImpl implements TJSCatalog {
     public void save() {
         for (DataStoreInfo dataStore : dataStores.values()) {
             TJSDataStore dst = dataStore.getTJSDataStore(new NullProgressListener());
-            Map parameters = dst.getDataStoreFactory().filterParamsForSave(dataStore.getConnectionParameters());
+            Map parameters =
+                    dst.getDataStoreFactory()
+                            .filterParamsForSave(dataStore.getConnectionParameters());
             Map targetParams = dataStore.getConnectionParameters();
             targetParams.clear();
             targetParams.putAll(parameters);
@@ -78,21 +76,26 @@ public class TJSCatalogImpl implements TJSCatalog {
     @Override
     public void add(JoinedMapInfo joinedMapInfo) {
         synchronized (joinedMaps) {
-            joinedMaps.put(joinedMapInfo.getFrameworkURI() + "+" + joinedMapInfo.getGetDataURL(), joinedMapInfo);
+            joinedMaps.put(
+                    joinedMapInfo.getFrameworkURI() + "+" + joinedMapInfo.getGetDataURL(),
+                    joinedMapInfo);
         }
     }
 
     @Override
     public void remove(JoinedMapInfo joinedMapInfo) {
         synchronized (joinedMaps) {
-            joinedMaps.remove(joinedMapInfo.getFrameworkURI() + "+" + joinedMapInfo.getGetDataURL());
+            joinedMaps.remove(
+                    joinedMapInfo.getFrameworkURI() + "+" + joinedMapInfo.getGetDataURL());
         }
     }
 
     @Override
     public void save(JoinedMapInfo joinedMapInfo) {
         synchronized (joinedMaps) {
-            joinedMaps.put(joinedMapInfo.getFrameworkURI() + "+" + joinedMapInfo.getGetDataURL(), joinedMapInfo);
+            joinedMaps.put(
+                    joinedMapInfo.getFrameworkURI() + "+" + joinedMapInfo.getGetDataURL(),
+                    joinedMapInfo);
         }
         save();
     }
@@ -177,7 +180,6 @@ public class TJSCatalogImpl implements TJSCatalog {
         dataSets.put(datasetInfo.getId(), datasetInfo);
     }
 
-
     public void remove(DatasetInfo datasetInfo) {
         frameworkDataSets.remove(datasetInfo.getFramework().getId(), datasetInfo);
         storeDataSets.remove(datasetInfo.getDataStore().getId(), datasetInfo);
@@ -186,7 +188,7 @@ public class TJSCatalogImpl implements TJSCatalog {
 
     public void save(DatasetInfo datasetInfo) {
         this.save();
-//        getFramework(datasetInfo.getFrameworkId()).save(datasetInfo);
+        //        getFramework(datasetInfo.getFrameworkId()).save(datasetInfo);
     }
 
     private List lookup(String key, MultiHashMap map) {
@@ -222,7 +224,7 @@ public class TJSCatalogImpl implements TJSCatalog {
 
     public List<NamespaceInfo> getNamespaces() {
         List<NamespaceInfo> geoserverNamespaces = getGeoserverCatalog().getNamespaces();
-        //Aqui habr'ia que a~nadir los namespaces propios de TJS
+        // Aqui habr'ia que a~nadir los namespaces propios de TJS
         return geoserverNamespaces;
     }
 
@@ -285,7 +287,20 @@ public class TJSCatalogImpl implements TJSCatalog {
     }
 
     public DataStoreInfo getDataStoreByName(String name) {
-        return dataStores.get(name);
+        DataStoreInfo dsi = dataStores.get(name);
+        if (dsi != null) {
+            return dsi;
+        }
+        // 2nd method. for DataStoreEditPage constructor. But it doesn't find it with
+        // dataStores.get(name) ??
+        for (Iterator<String> it = dataStores.keySet().iterator(); it.hasNext(); ) {
+            String frname = it.next();
+            DataStoreInfo dataStoreInfo = dataStores.get(frname);
+            if (dataStoreInfo.getName().equals(name)) {
+                return dataStoreInfo;
+            }
+        }
+        return null;
     }
 
     public List<DataStoreInfo> getDataStores() {
@@ -299,7 +314,8 @@ public class TJSCatalogImpl implements TJSCatalog {
             return dataStoreFactories.get(name);
         } else {
 
-            for (Iterator<TJSDataAccessFactory> it = TJSDataAccessFinder.getAvailableDataStores(); it.hasNext(); ) {
+            for (Iterator<TJSDataAccessFactory> it = TJSDataAccessFinder.getAvailableDataStores();
+                    it.hasNext(); ) {
                 TJSDataAccessFactory factory = it.next();
                 if (factory.getDisplayName().equals(name)) {
                     return factory;
@@ -325,7 +341,7 @@ public class TJSCatalogImpl implements TJSCatalog {
         if (frameworkDataSets == null) {
             frameworkDataSets = new MultiHashMap();
         }
-        //Assign catalog as Parent to all objects when load;
+        // Assign catalog as Parent to all objects when load;
         for (FrameworkInfo framework : frameworks.values()) {
             framework.setCatalog(this);
         }
@@ -339,7 +355,8 @@ public class TJSCatalogImpl implements TJSCatalog {
     }
 
     private void updateDatasetsIndex() {
-        // Thijs: add a try/catch to avoid errors reloading the confix.xml if JoinData requests have been processed
+        // Thijs: add a try/catch to avoid errors reloading the confix.xml if JoinData requests have
+        // been processed
         for (DatasetInfo dataSet : dataSets.values()) {
             try {
                 storeDataSets.put(dataSet.getDataStore().getId(), dataSet);
@@ -369,7 +386,6 @@ public class TJSCatalogImpl implements TJSCatalog {
         HashMap<String, TJSCatalogObject> allObj = new HashMap<String, TJSCatalogObject>();
         TJSCatalog catalog;
 
-
         public void visit(TJSCatalog catalog) {
             this.catalog = catalog;
             for (Iterator<FrameworkInfo> it = catalog.getFrameworks().iterator(); it.hasNext(); ) {
@@ -388,7 +404,8 @@ public class TJSCatalogImpl implements TJSCatalog {
 
         public void visit(DataStoreInfo dataStore) {
             allObj.put(dataStore.getId(), dataStore);
-            for (Iterator<DatasetInfo> it = catalog.getDatasets(dataStore.getId()).iterator(); it.hasNext(); ) {
+            for (Iterator<DatasetInfo> it = catalog.getDatasets(dataStore.getId()).iterator();
+                    it.hasNext(); ) {
                 DatasetInfo object = it.next();
                 visit(object);
             }
@@ -400,7 +417,7 @@ public class TJSCatalogImpl implements TJSCatalog {
 
         @Override
         public void visit(JoinedMapInfo joinedMap) {
-            //nada por ahora, Alvaro Javier
+            // nada por ahora, Alvaro Javier
         }
 
         public Map<String, TJSCatalogObject> getObjectMap() {
@@ -408,10 +425,7 @@ public class TJSCatalogImpl implements TJSCatalog {
         }
 
         public void visit(TJSCatalogObject object) {
-            //throw new UnsupportedOperationException("Not supported yet.");
+            // throw new UnsupportedOperationException("Not supported yet.");
         }
-    }
-
-    ;
-
+    };
 }

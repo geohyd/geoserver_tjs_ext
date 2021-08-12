@@ -3,15 +3,11 @@ package gmx.iderc.geoserver.tjs.catalog.impl;
 import gmx.iderc.geoserver.tjs.catalog.JoinedMapInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalogVisitor;
-
 import java.io.Serializable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Alvaro Javier
- * Date: 3/27/13
- * Time: 12:20 a.m.
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: Alvaro Javier Date: 3/27/13 Time: 12:20 a.m. To change this
+ * template use File | Settings | File Templates.
  */
 public class JoinedMapInfoImpl extends TJSCatalogObjectImpl implements JoinedMapInfo, Serializable {
 
@@ -113,6 +109,12 @@ public class JoinedMapInfoImpl extends TJSCatalogObjectImpl implements JoinedMap
 
     @Override
     public String toString() {
-        return "[FrameworkUri=" + frameworkURI + ",\ngetDataURL=" + getDataURL + ",\nupdatable=" + updatable + "]";
+        return "[FrameworkUri="
+                + frameworkURI
+                + ",\ngetDataURL="
+                + getDataURL
+                + ",\nupdatable="
+                + updatable
+                + "]";
     }
 }

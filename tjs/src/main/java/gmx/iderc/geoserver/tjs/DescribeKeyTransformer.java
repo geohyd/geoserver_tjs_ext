@@ -7,6 +7,12 @@ package gmx.iderc.geoserver.tjs;
 import gmx.iderc.geoserver.tjs.catalog.FrameworkInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.data.xml.ClassToXSDMapper;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.opengis.tjs10.DescribeKeyType;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -30,16 +36,9 @@ import org.opengis.filter.capability.FunctionName;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
- * Based on the <code>org.geotools.xml.transform</code> framework, does the job
- * of encoding a WFS 1.0 Capabilities document.
+ * Based on the <code>org.geotools.xml.transform</code> framework, does the job of encoding a WFS
+ * 1.0 Capabilities document.
  *
  * @author Gabriel Roldan, Axios Engineering
  * @author Chris Holmes
@@ -48,42 +47,32 @@ import java.util.logging.Logger;
  */
 public abstract class DescribeKeyTransformer extends TransformerBase {
 
-    /**
-     * logger
-     */
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(DescribeKeyTransformer.class.getPackage().getName());
-    /**
-     * identifer of a http get + post request
-     */
+    /** logger */
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(
+                    DescribeKeyTransformer.class.getPackage().getName());
+    /** identifer of a http get + post request */
     private static final String HTTP_GET = "Get";
+
     private static final String HTTP_POST = "Post";
-    /**
-     * wfs namespace
-     */
+    /** wfs namespace */
     protected static final String TJS_PREFIX = "tjs";
+
     protected static final String TJS_URI = "http://www.opengis.net/tjs";
-    /**
-     * xml schema namespace + prefix
-     */
+    /** xml schema namespace + prefix */
     protected static final String XSI_PREFIX = "xsi";
+
     protected static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
-    /**
-     * filter namesapce + prefix
-     */
+    /** filter namesapce + prefix */
     protected static final String OGC_PREFIX = "ogc";
+
     protected static final String OGC_URI = OGC.NAMESPACE;
-    /**
-     * wfs service
-     */
+    /** wfs service */
     protected TJSInfo tjs;
-    /**
-     * catalog
-     */
+    /** catalog */
     protected TJSCatalog catalog;
 
-    /**
-     * Creates a new CapabilitiesTransformer object.
-     */
+    /** Creates a new CapabilitiesTransformer object. */
     public DescribeKeyTransformer(TJSInfo tjs, TJSCatalog catalog) {
         super();
         setNamespaceDeclarationEnabled(false);
@@ -93,16 +82,18 @@ public abstract class DescribeKeyTransformer extends TransformerBase {
     }
 
     Set<FunctionName> getAvailableFunctionNames() {
-        //Sort them up for easier visual inspection
-        SortedSet sortedFunctions = new TreeSet(new Comparator() {
+        // Sort them up for easier visual inspection
+        SortedSet sortedFunctions =
+                new TreeSet(
+                        new Comparator() {
 
-            public int compare(Object o1, Object o2) {
-                String n1 = ((FunctionName) o1).getName();
-                String n2 = ((FunctionName) o2).getName();
+                            public int compare(Object o1, Object o2) {
+                                String n1 = ((FunctionName) o1).getName();
+                                String n2 = ((FunctionName) o2).getName();
 
-                return n1.toLowerCase().compareTo(n2.toLowerCase());
-            }
-        });
+                                return n1.toLowerCase().compareTo(n2.toLowerCase());
+                            }
+                        });
 
         Set<FunctionFactory> factories = CommonFactoryFinder.getFunctionFactories(null);
         for (FunctionFactory factory : factories) {
@@ -129,7 +120,8 @@ public abstract class DescribeKeyTransformer extends TransformerBase {
 
         class DescribeKeyTranslator extends TranslatorSupport {
 
-            //            private static final String GML_3_1_1_FORMAT = "text/xml; subtype=gml/3.1.1";
+            //            private static final String GML_3_1_1_FORMAT = "text/xml;
+            // subtype=gml/3.1.1";
             DescribeKeyType request;
 
             public DescribeKeyTranslator(ContentHandler handler) {
@@ -139,10 +131,10 @@ public abstract class DescribeKeyTransformer extends TransformerBase {
             protected String getBaseURL() {
                 try {
                     Request owsRequest = ((ThreadLocal<Request>) Dispatcher.REQUEST).get();
-                    if (owsRequest != null){
+                    if (owsRequest != null) {
                         return owsRequest.getHttpRequest().getRequestURL().toString();
-                    }else{
-                        //ocurre cuando se realizan los test
+                    } else {
+                        // ocurre cuando se realizan los test
                         return "http://localhost:8080/geoserver/";
                     }
                 } catch (Exception ex) {
@@ -166,25 +158,39 @@ public abstract class DescribeKeyTransformer extends TransformerBase {
             public void encode(Object object) throws IllegalArgumentException {
                 request = (DescribeKeyType) object;
 
-                AttributesImpl attributes = attributes(new String[]{
-                                                                           "version", "1.0",
-                                                                           "lang", "es",
-                                                                           "service", "TJS",
-                                                                           "capabilities", "http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities",
-                                                                           "xmlns:xsi", XSI_URI,
-                                                                           "xmlns", TJS.NAMESPACE,
-                                                                           "xmlns:ows", OWS.NAMESPACE, //"xmlns:gml", GML.NAMESPACE,
-                                                                           "xmlns:ogc", OGC.NAMESPACE, "xmlns:xlink", XLINK.NAMESPACE,
-                                                                           "xsi:schemaLocation", TJS.NAMESPACE + " "
-                                                                                                         + "http://schemas.opengis.net/tjs/1.0/tjsDescribeDatasets_response.xsd"
-                });
+                AttributesImpl attributes =
+                        attributes(
+                                new String[] {
+                                    "version",
+                                    "1.0",
+                                    "lang",
+                                    "es",
+                                    "service",
+                                    "TJS",
+                                    "capabilities",
+                                    "http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities",
+                                    "xmlns:xsi",
+                                    XSI_URI,
+                                    "xmlns",
+                                    TJS.NAMESPACE,
+                                    "xmlns:ows",
+                                    OWS.NAMESPACE, // "xmlns:gml", GML.NAMESPACE,
+                                    "xmlns:ogc",
+                                    OGC.NAMESPACE,
+                                    "xmlns:xlink",
+                                    XLINK.NAMESPACE,
+                                    "xsi:schemaLocation",
+                                    TJS.NAMESPACE
+                                            + " "
+                                            + "http://schemas.opengis.net/tjs/1.0/tjsDescribeDatasets_response.xsd"
+                                });
 
                 List<NamespaceInfo> namespaces = catalog.getNamespaces();
                 for (NamespaceInfo namespace : namespaces) {
                     String prefix = namespace.getPrefix();
                     String uri = namespace.getURI();
 
-                    //ignore xml prefix
+                    // ignore xml prefix
                     if ("xml".equals(prefix)) {
                         continue;
                     }
@@ -195,7 +201,6 @@ public abstract class DescribeKeyTransformer extends TransformerBase {
                 }
 
                 start(TJS.FrameworkKeyDescription.getLocalPart(), attributes);
-
 
                 for (FrameworkInfo framework : catalog.getFrameworks()) {
                     if (framework.getUri().equals(request.getFrameworkURI())) {
@@ -211,12 +216,16 @@ public abstract class DescribeKeyTransformer extends TransformerBase {
                     return;
                 }
                 start(TJS.FrameworkKey.getLocalPart());
-                //   <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0" />
-                AttributesImpl attributes = attributes(new String[]{
-                                                                           "name", frameworkKey.getName(),
-                                                                           "type", ClassToXSDMapper.map(frameworkKey.getBinding()),
-                                                                           "length", String.valueOf(frameworkKey.getLength()),
-                                                                           "decimals", "0"});
+                //   <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer"
+                // length="2" decimals="0" />
+                AttributesImpl attributes =
+                        attributes(
+                                new String[] {
+                                    "name", frameworkKey.getName(),
+                                    "type", ClassToXSDMapper.map(frameworkKey.getBinding()),
+                                    "length", String.valueOf(frameworkKey.getLength()),
+                                    "decimals", "0"
+                                });
                 element("Column", "", attributes);
                 end(TJS.FrameworkKey.getLocalPart());
             }
@@ -241,7 +250,9 @@ public abstract class DescribeKeyTransformer extends TransformerBase {
                 element(TJS.Abstract.getLocalPart(), framework.getDescription());
                 if (framework.getRefererenceDate() != null) {
                     DateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:SS");
-                    element(TJS.ReferenceDate.getLocalPart(), format.format(framework.getRefererenceDate()));
+                    element(
+                            TJS.ReferenceDate.getLocalPart(),
+                            format.format(framework.getRefererenceDate()));
                 }
                 element(TJS.Version.getLocalPart(), String.valueOf(framework.getVersion()));
                 element(TJS.Documentation.getLocalPart(), framework.getDocumentation());
@@ -263,24 +274,33 @@ public abstract class DescribeKeyTransformer extends TransformerBase {
                     start(TJS.Rowset.getLocalPart());
                     Catalog geoCatalog = framework.getCatalog().getGeoserverCatalog();
                     DataStoreInfo dsi = framework.getFeatureType().getStore();
-                    FeatureSource featureSource = geoCatalog.getResourcePool().getFeatureSource(framework.getFeatureType(), null);
+                    FeatureSource featureSource =
+                            geoCatalog
+                                    .getResourcePool()
+                                    .getFeatureSource(framework.getFeatureType(), null);
                     String keyName = framework.getFrameworkKey().getName();
                     String titleName = "";
                     if (hasTitle) {
                         titleName = framework.getFrameworkKeyTitle().getName();
                     }
-                    for (FeatureIterator fit = featureSource.getFeatures().features(); fit.hasNext(); ) {
+                    for (FeatureIterator fit = featureSource.getFeatures().features();
+                            fit.hasNext(); ) {
                         Feature feature = fit.next();
                         start("Row");
-                        element(TJS.K.getLocalPart(), feature.getProperty(keyName).getValue().toString());
+                        element(
+                                TJS.K.getLocalPart(),
+                                feature.getProperty(keyName).getValue().toString());
                         if (hasTitle) {
-                            element(TJS.Title.getLocalPart(), feature.getProperty(titleName).getValue().toString());
+                            element(
+                                    TJS.Title.getLocalPart(),
+                                    feature.getProperty(titleName).getValue().toString());
                         }
                         end("Row");
                     }
                     end(TJS.Rowset.getLocalPart());
                 } catch (IOException ex) {
-                    Logger.getLogger(DescribeKeyTransformer.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DescribeKeyTransformer.class.getName())
+                            .log(Level.SEVERE, null, ex);
                 }
             }
         }

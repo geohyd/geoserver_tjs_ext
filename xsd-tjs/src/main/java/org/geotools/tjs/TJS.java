@@ -1,7 +1,7 @@
 package org.geotools.tjs;
 
 
-import org.geotools.xml.XSD;
+import org.geotools.xsd.XSD;
 
 import javax.xml.namespace.QName;
 import java.util.Set;

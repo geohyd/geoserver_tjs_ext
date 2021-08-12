@@ -3,9 +3,14 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <gs.version>2.16.1</gs.version>
+        <gt.version>22.1</gt.version>
+        <tjs.version>2.16.1</tjs.version>
+    </properties>
     <groupId>gmx.iderc.geoserver</groupId>
     <artifactId>tjsdata</artifactId>
-    <version>1.1.7-SNAPSHOT</version>
+    <version>2.16.1</version>
     <name>Geomix TJS Datasource suport(tjs-data)</name>
     <url>http://maven.apache.org</url>
     <packaging>jar</packaging>
@@ -14,9 +19,9 @@
   <repository>
     <id>boundless</id>
     <name>Boundless Maven Repository</name>
-    <url>http://repo.boundlessgeo.com/main</url>
+    <url>https://repo.osgeo.org/repository/release/</url>
     <snapshots>
-    <enabled>true</enabled>
+      <enabled>true</enabled>
     </snapshots>
   </repository>
 
@@ -72,21 +77,26 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
+                <inherited>true</inherited>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.0.4</version>
+                <version>3.2.0</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
                         <goals>
                             <goal>jar</goal>
+                            <goal>test-jar</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -94,33 +104,20 @@
         </plugins>
     </build>
     <dependencies>
-<!--
-        <dependency>
-            <groupId>org.geotools.ogc</groupId>
-            <artifactId>net.opengis.tjs</artifactId>
-            <version>8.6</version>
-        </dependency>
--->
         <dependency>
             <groupId>org.geotools.xsd</groupId>
             <artifactId>gt-xsd-tjs</artifactId>
-            <version>13.3</version>
+            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.2</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.2</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
-            <version>13.3</version>
+            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>
@@ -152,15 +149,5 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.17</version>
         </dependency>
-        <!--dependency>
-            <artifactId>ojdbc14</artifactId>
-            <groupId>com.oracle</groupId>
-            <version>10.2.0.4.0</version>
-        </dependency-->
-        <!--dependency>
-            <artifactId>sdoapi</artifactId>
-            <groupId>com.oracle</groupId>
-            <version>10.2.0</version>
-        </dependency-->
     </dependencies>
 </project>

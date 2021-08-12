@@ -8,7 +8,9 @@ import gmx.iderc.geoserver.tjs.catalog.FrameworkInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.web.TJSBasePage;
 import gmx.iderc.geoserver.tjs.web.TJSCatalogObjectDetachableModel;
-import org.apache.wicket.PageParameters;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.extensions.markup.html.form.DateTextField;
@@ -19,19 +21,15 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.XMLNameValidator;
 import org.geotools.util.logging.Logging;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.logging.Logger;
-
-/**
- * Allows editing a specific workspace
- */
+/** Allows editing a specific workspace */
 @SuppressWarnings("serial")
 public class FrameworkEditPage extends TJSBasePage {
 
@@ -47,7 +45,8 @@ public class FrameworkEditPage extends TJSBasePage {
      * @param parameters
      */
     public FrameworkEditPage(PageParameters parameters) {
-        String frName = parameters.getString("name");
+        // String frName = parameters.getString("name");
+        String frName = parameters.get("name").toString();
         FrameworkInfo fri = getTJSCatalog().getFrameworkByName(frName);
 
         if (fri == null) {
@@ -66,28 +65,33 @@ public class FrameworkEditPage extends TJSBasePage {
     private void init(FrameworkInfo frameworkInfo) {
 
         frameworkModel = new TJSCatalogObjectDetachableModel(frameworkInfo);
-//        final IModel model = new CompoundPropertyModel(frameworkInfo);
+        // final IModel model = new CompoundPropertyModel(frameworkInfo);
+        // NamespaceInfo ns = getCatalog().getNamespaceByPrefix( ws.getName() );
+        // nsModel = new NamespaceDetachableModel(ns);
 
-
-//        NamespaceInfo ns = getCatalog().getNamespaceByPrefix( ws.getName() );
-//        nsModel = new NamespaceDetachableModel(ns);
-
-        Form form = new Form("form", new CompoundPropertyModel(frameworkModel)) {
-            protected void onSubmit() {
-                try {
-                    saveFramework();
-                } catch (RuntimeException e) {
-                    error(e.getMessage());
-                }
-            }
-        };
+        Form form =
+                new Form("form", new CompoundPropertyModel(frameworkModel)) {
+                    protected void onSubmit() {
+                        try {
+                            saveFramework();
+                        } catch (RuntimeException e) {
+                            error(e.getMessage());
+                        }
+                    }
+                };
         add(form);
         TextField name = new TextField("name", new PropertyModel(frameworkModel, "name"));
         name.setRequired(true);
         name.add(new XMLNameValidator());
+        // The user cannot set the name, see comment in FrameworkKeyPanel.java file, on Ajax/change
+        // event
+        // It will be set with the featuretype selected
+        name.setEnabled(false);
+        name.setOutputMarkupId(true);
         form.add(name);
 
-        TextField description = new TextField("description", new PropertyModel(frameworkModel, "description"));
+        TextField description =
+                new TextField("description", new PropertyModel(frameworkModel, "description"));
         description.setRequired(false);
         form.add(description);
 
@@ -102,20 +106,20 @@ public class FrameworkEditPage extends TJSBasePage {
         form.add(versionTextField.setRequired(false));
 
         TextField<String> documentationTextField = new TextField<String>("documentation");
-        documentationTextField.add(new StringValidator() {
-
-            @Override
-            protected void onValidate(IValidatable<String> paramIValidatable) {
-                try {
-                    URI uri = new URI(paramIValidatable.getValue());
-                } catch (URISyntaxException ex) {
-                    error(paramIValidatable, "badUriError");
-                }
-            }
-        });
+        documentationTextField.add(
+                new StringValidator() {
+                    @Override
+                    public void validate(IValidatable<String> validatable) {
+                        try {
+                            URI uri = new URI(validatable.getValue());
+                        } catch (URISyntaxException ex) {
+                            validatable.error(new ValidationError("badDocumentationUriError"));
+                        }
+                    }
+                });
         form.add(documentationTextField.setRequired(false));
 
-        frameworkKeyPanel = new FrameworkKeyPanel("frameworkKeyPanel", frameworkModel, true);
+        frameworkKeyPanel = new FrameworkKeyPanel("frameworkKeyPanel", frameworkModel, true, name);
         form.add(frameworkKeyPanel);
 
         final IModel associatedWMSLabelModel = new ResourceModel("associatedWMS", "Associated WMS");
@@ -123,29 +127,34 @@ public class FrameworkEditPage extends TJSBasePage {
         form.add(label);
 
         IModel associatedWMSModel = new PropertyModel(frameworkModel, "associatedWMS");
-        DropDownChoice associatedWMSChoice = new DropDownChoice("associatedWMSValue", associatedWMSModel,
-                                                                       new AssociatedWMSsModel(), new AssociatedWMSChoiceRenderer());
+        DropDownChoice associatedWMSChoice =
+                new DropDownChoice(
+                        "associatedWMSValue",
+                        associatedWMSModel,
+                        new AssociatedWMSsModel(),
+                        new ChoiceRenderer("name", "id"));
         associatedWMSChoice.setRequired(true);
         // set the label to be the paramLabelModel otherwise a validation error would look like
         // "Parameter 'paramValue' is required"
         associatedWMSChoice.setLabel(associatedWMSLabelModel);
         associatedWMSChoice.setOutputMarkupId(true);
 
-        associatedWMSChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        associatedWMSChoice.add(
+                new AjaxFormComponentUpdatingBehavior("onchange") {
 
-            protected void onUpdate(AjaxRequestTarget target) {
-                // Reset the phone model dropdown when the vendor changes
-            }
-
-        });
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        // Reset the phone model dropdown when the vendor changes
+                    }
+                });
         form.add(associatedWMSChoice);
 
         CheckBox enabledChk = new CheckBox("enabled", new PropertyModel(frameworkModel, "enabled"));
         form.add(enabledChk);
 
-        //stores
-//        StorePanel storePanel = new StorePanel("storeTable", new StoreProvider(ws), false);
-//        form.add(storePanel);
+        // stores
+        //        StorePanel storePanel = new StorePanel("storeTable", new StoreProvider(ws),
+        // false);
+        //        form.add(storePanel);
 
         SubmitLink submit = new SubmitLink("save");
         form.add(submit);
@@ -159,5 +168,4 @@ public class FrameworkEditPage extends TJSBasePage {
         catalog.save(frameworkInfo);
         setResponsePage(FrameworkPage.class);
     }
-
 }

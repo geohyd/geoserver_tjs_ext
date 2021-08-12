@@ -5,15 +5,10 @@
 
 package gmx.iderc.geoserver.tjs.kvp;
 
-
+import java.util.Map;
 import net.opengis.tjs10.RequestBaseType;
 
-import java.util.Map;
-
-
-/**
- * @author root
- */
+/** @author root */
 public class DescribeJoinAbilitiesKvpRequestReader extends TJSKvpRequestReader {
 
     public DescribeJoinAbilitiesKvpRequestReader() {
@@ -25,6 +20,4 @@ public class DescribeJoinAbilitiesKvpRequestReader extends TJSKvpRequestReader {
         request = super.read(request, kvp, rawKvp);
         return request;
     }
-
-
 }

@@ -6,21 +6,18 @@
 package gmx.iderc.geoserver.tjs.web.framework;
 
 import gmx.iderc.geoserver.tjs.web.TJSWicketTestSupport;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * @author root
- */
+/** @author root */
 public class FrameworkNewPageTest extends TJSWicketTestSupport {
 
-    
     protected void setUpInternal() throws Exception {
         try {
             login();
         } catch (Exception ex) {
-            Logger.getLogger(FrameworkNewPageTest.class.getName()).log(Level.SEVERE, "Excepcion en setUpInternal(): " + ex.getMessage());
+            Logger.getLogger(FrameworkNewPageTest.class.getName())
+                    .log(Level.SEVERE, "Excepcion en setUpInternal(): " + ex.getMessage());
             throw ex;
         }
     }
@@ -30,5 +27,4 @@ public class FrameworkNewPageTest extends TJSWicketTestSupport {
         tester.assertRenderedPage(FrameworkNewPage.class);
         tester.assertNoErrorMessage();
     }
-
 }

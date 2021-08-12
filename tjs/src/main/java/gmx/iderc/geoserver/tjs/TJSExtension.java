@@ -8,9 +8,7 @@ package gmx.iderc.geoserver.tjs;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalogPersistence;
 
-/**
- * @author root
- */
+/** @author root */
 public class TJSExtension {
 
     public static final String TJS_TEMP_WORKSPACE = "__temp";
@@ -20,6 +18,12 @@ public class TJSExtension {
         if (catalog == null) {
             catalog = TJSCatalogPersistence.load();
         }
+        return catalog;
+    }
+
+    // Antea : Add this for reload the conf/catalog from persistence conf.
+    public static TJSCatalog reloadTJSCatalog() {
+        catalog = TJSCatalogPersistence.load();
         return catalog;
     }
 }

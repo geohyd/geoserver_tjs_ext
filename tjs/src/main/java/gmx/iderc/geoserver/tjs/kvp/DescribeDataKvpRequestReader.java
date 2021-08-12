@@ -6,13 +6,10 @@
 package gmx.iderc.geoserver.tjs.kvp;
 
 import gmx.iderc.geoserver.tjs.TJSException;
+import java.util.Map;
 import net.opengis.tjs10.DescribeDataType;
 
-import java.util.Map;
-
-/**
- * @author root
- */
+/** @author root */
 public class DescribeDataKvpRequestReader extends TJSKvpRequestReader {
 
     public DescribeDataKvpRequestReader() {
@@ -41,6 +38,4 @@ public class DescribeDataKvpRequestReader extends TJSKvpRequestReader {
 
         return request;
     }
-
-
 }

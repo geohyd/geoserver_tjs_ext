@@ -5,14 +5,11 @@
 
 package gmx.iderc.geoserver.tjs;
 
-import org.geoserver.config.ServiceInfo;
-
 import java.util.Arrays;
 import java.util.List;
+import org.geoserver.config.ServiceInfo;
 
-/**
- * @author root
- */
+/** @author root */
 public interface TJSInfo extends ServiceInfo {
 
     static enum Version {
@@ -22,14 +19,12 @@ public interface TJSInfo extends ServiceInfo {
             if (v.startsWith("1.0")) {
                 return V_10;
             }
-//            if ( v.startsWith( "1.1") ) {
-//                return V_11;
-//            }
+            // if ( v.startsWith( "1.1") ) {
+            //      return V_11;
+            // }
             return null;
         }
-    }
-
-    ;
+    };
 
     static enum Operation {
         GETCAPABILITIES {
@@ -73,7 +68,7 @@ public interface TJSInfo extends ServiceInfo {
             }
         };
 
-        abstract public int getCode();
+        public abstract int getCode();
     }
 
     static enum ServiceLevel {
@@ -84,9 +79,12 @@ public interface TJSInfo extends ServiceInfo {
 
             public List<Operation> getOps() {
                 return Arrays.asList(
-                                            Operation.GETCAPABILITIES, Operation.DESCRIBEFRAMEWORKS, Operation.DESCRIBEKEY,
-                                            Operation.DESCRIBEDATASETS, Operation.DESCRIBEDATA, Operation.GETDATA
-                );
+                        Operation.GETCAPABILITIES,
+                        Operation.DESCRIBEFRAMEWORKS,
+                        Operation.DESCRIBEKEY,
+                        Operation.DESCRIBEDATASETS,
+                        Operation.DESCRIBEDATA,
+                        Operation.GETDATA);
             }
         },
         COMPLETE {
@@ -96,22 +94,26 @@ public interface TJSInfo extends ServiceInfo {
 
             public List<Operation> getOps() {
                 return Arrays.asList(
-                                            Operation.GETCAPABILITIES, Operation.DESCRIBEFRAMEWORKS, Operation.DESCRIBEKEY,
-                                            Operation.DESCRIBEDATASETS, Operation.DESCRIBEDATA, Operation.GETDATA,
-                                            Operation.DESCRIBEJOINTABILITIES, Operation.JOINTDATA
-                );
+                        Operation.GETCAPABILITIES,
+                        Operation.DESCRIBEFRAMEWORKS,
+                        Operation.DESCRIBEKEY,
+                        Operation.DESCRIBEDATASETS,
+                        Operation.DESCRIBEDATA,
+                        Operation.GETDATA,
+                        Operation.DESCRIBEJOINTABILITIES,
+                        Operation.JOINTDATA);
             }
         };
 
-        abstract public int getCode();
+        public abstract int getCode();
 
-        abstract public List<Operation> getOps();
+        public abstract List<Operation> getOps();
 
         boolean contains(ServiceLevel other) {
             return getOps().containsAll(other.getOps());
         }
 
-        static public ServiceLevel get(int code) {
+        public static ServiceLevel get(int code) {
             for (ServiceLevel s : values()) {
                 if (s.getCode() == code) {
                     return s;
@@ -120,34 +122,29 @@ public interface TJSInfo extends ServiceInfo {
 
             return null;
         }
-    }
-
-    ;
+    };
 
     /**
-     * Get the flag that determines the encoding of the TJS schemaLocation.
-     * True if the TJS schemaLocation should refer to the canonical location,
-     * false if the TJS schemaLocation should refer to a copy served by GeoServer.
+     * Get the flag that determines the encoding of the TJS schemaLocation. True if the TJS
+     * schemaLocation should refer to the canonical location, false if the TJS schemaLocation should
+     * refer to a copy served by GeoServer.
      */
     boolean isCanonicalSchemaLocation();
 
     /**
-     * Set the flag that determines the encoding of the TJS schemaLocation.
-     * True if the TJS schemaLocation should refer to the canonical location,
-     * false if the TJS schemaLocation should refer to a copy served by GeoServer.
+     * Set the flag that determines the encoding of the TJS schemaLocation. True if the TJS
+     * schemaLocation should refer to the canonical location, false if the TJS schemaLocation should
+     * refer to a copy served by GeoServer.
      */
     void setCanonicalSchemaLocation(boolean canonicalSchemaLocation);
 
-    /**
-     * The level of service provided by the TJS.
-     */
+    /** The level of service provided by the TJS. */
     ServiceLevel getServiceLevel();
 
-    /**
-     * Sets the level of service provided by the TJS.
-     */
+    /** Sets the level of service provided by the TJS. */
     void setServiceLevel(ServiceLevel serviceLevel);
 
     public String getTjsServerBaseURL();
+
     public void setTjsServerBaseURL(String tjsServerBaseURL);
 }

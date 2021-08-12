@@ -4,15 +4,15 @@
  */
 package gmx.iderc.geoserver.tjs.web.framework;
 
+import java.util.*;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 
-/**
- * Simple choice renderer for {@link WorkspaceInfo}
- */
+/** Simple choice renderer for {@link WorkspaceInfo} */
 @SuppressWarnings("serial")
-public class FeatureTypePropertyChoiceRenderer implements IChoiceRenderer {
+public class FeatureTypePropertyChoiceRenderer<T> implements IChoiceRenderer {
 
     public Object getDisplayValue(Object object) {
         return ((AttributeTypeInfo) object).getName();
@@ -22,4 +22,11 @@ public class FeatureTypePropertyChoiceRenderer implements IChoiceRenderer {
         return ((AttributeTypeInfo) object).getName();
     }
 
+    @Override
+    public T getObject(String id, IModel choices) {
+        // TODO JDU
+        return ((IModel<? extends List<? extends T>>) choices)
+                .getObject()
+                .get(Integer.parseInt(id));
+    }
 }

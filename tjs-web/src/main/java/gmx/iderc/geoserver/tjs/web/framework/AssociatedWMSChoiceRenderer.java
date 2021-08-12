@@ -4,14 +4,14 @@
  */
 package gmx.iderc.geoserver.tjs.web.framework;
 
+import java.util.*;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerInfo;
 
-/**
- * Simple choice renderer for {@link org.geoserver.catalog.WorkspaceInfo}
- */
+/** Simple choice renderer for {@link org.geoserver.catalog.WorkspaceInfo} */
 @SuppressWarnings("serial")
-public class AssociatedWMSChoiceRenderer implements IChoiceRenderer {
+public class AssociatedWMSChoiceRenderer<T> implements IChoiceRenderer {
 
     public Object getDisplayValue(Object object) {
         return ((LayerInfo) object).getName();
@@ -21,4 +21,11 @@ public class AssociatedWMSChoiceRenderer implements IChoiceRenderer {
         return ((LayerInfo) object).getId();
     }
 
+    @Override
+    public T getObject(String id, IModel choices) {
+        // TODO JDU
+        return ((IModel<? extends List<? extends T>>) choices)
+                .getObject()
+                .get(Integer.parseInt(id));
+    }
 }

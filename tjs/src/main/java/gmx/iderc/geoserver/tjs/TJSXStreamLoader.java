@@ -1,5 +1,7 @@
 package gmx.iderc.geoserver.tjs;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
@@ -7,12 +9,8 @@ import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.Version;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 /**
- * Loads and persist the {@link TJSInfo} object to and from xstream
- * persistence.
+ * Loads and persist the {@link TJSInfo} object to and from xstream persistence.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -61,5 +59,4 @@ public class TJSXStreamLoader extends XStreamServiceLoader<TJSInfo> {
         }
         return service;
     }
-
 }

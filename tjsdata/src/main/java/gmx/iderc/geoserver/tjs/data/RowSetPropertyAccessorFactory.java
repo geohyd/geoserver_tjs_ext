@@ -1,7 +1,7 @@
 package gmx.iderc.geoserver.tjs.data;
 
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.factory.Hints;
+import org.geotools.util.factory.Hints;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.filter.expression.PropertyAccessorFactory;
 import org.opengis.filter.FilterFactory2;
