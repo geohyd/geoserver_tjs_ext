@@ -9,7 +9,7 @@ import gmx.iderc.geoserver.tjs.data.TJSDataStore;
 import java.io.Serializable;
 import java.util.Map;
 import org.geoserver.catalog.MetadataMap;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.util.ProgressListener;
 
 /** @author capote */
 public interface DataStoreInfo extends TJSCatalogObject {

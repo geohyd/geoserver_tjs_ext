@@ -1,5 +1,7 @@
 package gmx.iderc.geoserver.tjs;
 
+import static junit.framework.Assert.assertEquals;
+
 import junit.framework.Test;
 import org.w3c.dom.Document;
 

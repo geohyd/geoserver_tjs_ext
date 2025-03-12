@@ -2,17 +2,17 @@ package gmx.iderc.geoserver.tjs.data;
 
 import java.io.IOException;
 import java.util.logging.Logger;
-import org.geotools.data.*;
-import org.geotools.data.Query;
+import org.geotools.api.data.*;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Created with IntelliJ IDEA. User: thijsb Date: 3/25/14 Time: 11:45 AM To change this template use

@@ -5,11 +5,12 @@ import gmx.iderc.geoserver.tjs.catalog.FrameworkInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import java.awt.*;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geotools.data.*;
+import org.geotools.api.data.DataAccessFactory.*;
+import org.geotools.api.data.DataStore;
+import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -33,7 +34,7 @@ public class TJSJoinedDataStoreFactory implements DataStoreFactorySpi {
             new Param("namespace", String.class, "namespace of datastore", false);
 
     @Override
-    public DataStore createDataStore(Map<String, Serializable> params) throws IOException {
+    public DataStore createDataStore(Map<String, ?> params) throws IOException {
         TJSCatalog tjsCatalog = TJSExtension.getTJSCatalog();
 
         // one of the params is the datastoreId, which should be stored / saved...
@@ -48,7 +49,7 @@ public class TJSJoinedDataStoreFactory implements DataStoreFactorySpi {
     }
 
     @Override
-    public DataStore createNewDataStore(Map<String, Serializable> params) throws IOException {
+    public DataStore createNewDataStore(Map<String, ?> params) throws IOException {
         throw new UnsupportedOperationException(
                 "A TJS Joined Data Store is only created automatically, through a TJS JoinedData operation ");
     }
@@ -71,7 +72,7 @@ public class TJSJoinedDataStoreFactory implements DataStoreFactorySpi {
     }
 
     @Override
-    public boolean canProcess(Map<String, Serializable> params) {
+    public boolean canProcess(java.util.Map<String, ?> params) {
         boolean canProcess = false;
         try {
             TJSCatalog tjsCatalog = TJSExtension.getTJSCatalog();

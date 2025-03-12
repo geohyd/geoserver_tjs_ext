@@ -8,8 +8,8 @@ package gmx.iderc.geoserver.tjs.catalog.impl;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalogObject;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalogVisitor;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.Name;
 
 /** @author capote */
 public class TJSCatalogObjectImpl implements TJSCatalogObject {

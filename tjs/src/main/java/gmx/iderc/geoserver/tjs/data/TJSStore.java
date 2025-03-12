@@ -1,5 +1,6 @@
 package gmx.iderc.geoserver.tjs.data;
 
+import gmx.iderc.geoserver.tjs.JoinDataTransformer;
 import gmx.iderc.geoserver.tjs.TJSExtension;
 import gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogFactoryImpl;
 import java.io.IOException;
@@ -8,10 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.StoreInfoImpl;
-import org.geotools.data.DataAccess;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.util.ProgressListener;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
+import org.geotools.api.util.ProgressListener;
 
 /**
  * Created with IntelliJ IDEA. User: capote Date: 10/8/12 Time: 9:34 PM To change this template use
