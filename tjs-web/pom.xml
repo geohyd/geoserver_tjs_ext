@@ -4,19 +4,19 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.18.3</version>
+    <version>2.25.2</version>
     <relativePath>../../../web/pom.xml</relativePath>
   </parent>
   <groupId>gmx.iderc.geoserver</groupId>
   <artifactId>tjs-web</artifactId>
-  <version>2.18.3</version>
+  <version>2.25.2</version>
   <packaging>jar</packaging>
   <name>GeoMIX TJS for Geoserver UI Module(tjs-web)</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <gs.version>2.18.3</gs.version>
-    <gt.version>24-SNAPSHOT</gt.version>
-    <tjs.version>2.18.3</tjs.version>
+    <gs.version>2.25.2</gs.version>
+    <gt.version>31.2</gt.version>
+    <tjs.version>2.25.2</tjs.version>
   </properties>
   <dependencies>
     <dependency>
@@ -69,7 +69,7 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-validation</artifactId>
-      <version>${gt.version}</version>
+      <version>24.7</version>
     </dependency>
   </dependencies>
 
