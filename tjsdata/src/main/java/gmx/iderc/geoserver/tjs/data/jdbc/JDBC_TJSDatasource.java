@@ -9,7 +9,7 @@ import com.sun.rowset.CachedRowSetImpl;
 import gmx.iderc.geoserver.tjs.data.TJSDatasource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 import javax.sql.RowSet;
 import java.io.IOException;

@@ -6,8 +6,8 @@ import gmx.iderc.geoserver.tjs.data.jdbc.JDBC_TJSDataStoreFactory;
 import gmx.iderc.geoserver.tjs.data.jdbc.postgre.Postgre_TJSDataStoreFactory;
 import junit.framework.TestCase;
 import org.geotools.factory.CommonFactoryFinder;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 
 import javax.sql.RowSet;
 import java.sql.ResultSetMetaData;
