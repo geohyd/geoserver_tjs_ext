@@ -135,7 +135,7 @@ public class FrameworkKeyPanel extends Panel {
                         frameworkKeyTitleModel,
                         attributesModel,
                         new ChoiceRenderer());
-        keyTitlePropertyChoice.setRequired(false);
+        keyTitlePropertyChoice.setRequired(true);
         keyTitlePropertyChoice.setOutputMarkupId(true);
         // feedback.add(keyTitlePropertyChoice);
         add(keyTitlePropertyChoice);

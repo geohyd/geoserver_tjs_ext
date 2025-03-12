@@ -31,7 +31,7 @@ import org.geoserver.web.data.store.panel.PasswordParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
-import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.api.data.DataAccessFactory.Param;
 
 @SuppressWarnings("serial")
 public class DefaultDataStoreEditPanel extends Panel {
