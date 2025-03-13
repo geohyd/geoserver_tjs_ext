@@ -6,13 +6,16 @@
 package gmx.iderc.geoserver.tjs.catalog;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.security.AnyTypePermission;
 import gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogImpl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
@@ -59,10 +62,17 @@ public class TJSCatalogPersistence {
                 FileInputStream fis;
                 fis = new FileInputStream(persistenceFile);
                 XStream xs = new XStream();
-                TJSCatalog catalog = (TJSCatalog) xs.fromXML(fis);
-                fis.close();
-                catalog.init();
-                return catalog;
+                xs.addPermission(AnyTypePermission.ANY);
+                String xmlStringContent = IOUtils.toString(fis, StandardCharsets.UTF_8.name());
+                try {
+                    TJSCatalog catalog = (TJSCatalog) xs.fromXML(xmlStringContent);
+                    fis.close();
+                    catalog.init();
+                    return catalog;
+                } catch (Exception ex) {
+                    logger.log(Level.SEVERE, "Ocurrio una excepcion", ex);
+                    throw ex;
+                }
             }
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Ocurrio una excepcion", ex);
