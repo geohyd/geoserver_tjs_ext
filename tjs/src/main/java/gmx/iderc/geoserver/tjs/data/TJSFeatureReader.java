@@ -1,6 +1,5 @@
 package gmx.iderc.geoserver.tjs.data;
 
-import com.sun.rowset.CachedRowSetImpl;
 import gmx.iderc.geoserver.tjs.catalog.ColumnInfo;
 import gmx.iderc.geoserver.tjs.catalog.DatasetInfo;
 import java.io.IOException;
@@ -10,6 +9,9 @@ import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.RowSet;
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
 import org.geotools.api.data.FeatureReader;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
@@ -28,7 +30,7 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
     FeatureReader<SimpleFeatureType, SimpleFeature> featureReader;
     DatasetInfo datasetInfo;
     SimpleFeatureType type;
-    CachedRowSetImpl rst;
+    CachedRowSet rst;
     TJSDatasource tjsDatasource = null;
     Boolean caseInsensitive = true;
 
@@ -101,7 +103,9 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
         // TODO: determine if features without joined results should be skipped  / removed or have
         // empty values
         try {
-            rst = new CachedRowSetImpl();
+            RowSetFactory factory = RowSetProvider.newFactory();
+            rst = factory.createCachedRowSet();
+            // rst = new CachedRowSetImpl();
             if (this.tjsDatasource == null) {
                 this.tjsDatasource = datasetInfo.getTJSDatasource();
             }
