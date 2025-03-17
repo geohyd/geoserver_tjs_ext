@@ -1,6 +1,5 @@
 package gmx.iderc.geoserver.tjs.data;
 
-import gmx.iderc.geoserver.tjs.JoinDataTransformer;
 import gmx.iderc.geoserver.tjs.TJSExtension;
 import gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogFactoryImpl;
 import java.io.IOException;
