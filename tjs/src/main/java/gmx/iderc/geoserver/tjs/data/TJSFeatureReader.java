@@ -167,10 +167,10 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
                     newValue = lookup(keyValue, column.getName());
                 }
             } catch (Exception ex) {
-                newValue = "";
+                newValue = null;
             }
             if (newValue == null) {
-                newValue = ""; // this assumes string. But we need to know the type?
+                newValue = null; // this assumes string. But we need to know the type?
             } else {
                 // We do have at least one value, so we can continue building the feature
                 match = true;
