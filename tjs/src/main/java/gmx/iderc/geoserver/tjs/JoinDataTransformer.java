@@ -23,6 +23,8 @@ import org.geoserver.catalog.*;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geotools.api.data.*;
@@ -461,12 +463,6 @@ public abstract class JoinDataTransformer extends TransformerBase {
                                     tempWorkspaceInfo); // TJSExtension.TJS_TEMP_WORKSPACE
 
                     String tempDataStoreName = tempTJSStore.getName();
-                    LOGGER.log(
-                            Level.SEVERE,
-                            "// the tjsTempDataStores : " + tjsTempDataStores.toString());
-                    LOGGER.log(
-                            Level.SEVERE,
-                            "// the tempDataStoreName : " + tempDataStoreName.toString());
                     DataStoreInfo dsInfoNew =
                             getTempDatastoreIfExists(tjsTempDataStores, tempDataStoreName);
                     // add a datastore if there does not seem to be one already
@@ -542,6 +538,7 @@ public abstract class JoinDataTransformer extends TransformerBase {
                         // here name, this is done in the joindata reponse.
                         layer.setAdvertised(false);
                         gsCatalog.add(layer);
+                        this.removeLayerFromGWC(layer);
                     } else {
                         // reload layer?
                     }
@@ -597,6 +594,20 @@ public abstract class JoinDataTransformer extends TransformerBase {
                     Logger.getLogger(JoinDataTransformer.class.getName())
                             .log(Level.SEVERE, ex.getMessage());
                     ex.printStackTrace();
+                }
+            }
+
+            private void removeLayerFromGWC(LayerInfo layer) {
+                /**
+                 * If the layer is in the GWC, remove it This is necessary because if you restart
+                 * the server, the tjs layer will be erase in GC but not in GWC : GWC break in this
+                 * case
+                 */
+                GWC gwc = GWC.get();
+                GeoServerTileLayer tileLayer = gwc.getTileLayer(layer);
+                if (tileLayer != null) {
+                    gwc.removeTileLayers(
+                            new ArrayList<String>(Arrays.asList(layer.prefixedName())));
                 }
             }
 
