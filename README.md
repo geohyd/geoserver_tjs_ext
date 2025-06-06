@@ -12,7 +12,7 @@ This extension is still under development. Please read this carefully. Any feedb
 
 Features
 ========
-The TJS extension adds TJS support to Geoserver (2.18.x at the moment). It adds TJS operations to join data and adds web administration options. The web admin allows for management / configuration of:
+The TJS extension adds TJS support to Geoserver (2.25.2 at the moment). It adds TJS operations to join data and adds web administration options. The web admin allows for management / configuration of:
 - spatial frameworks (spatial datasets to join data on) and non-spatial tabular data to be published in GDAS encoding
 - pre-configured joins.
 
@@ -24,7 +24,7 @@ The TJS OGC webservice interface of this extension supports almost all TJS opera
 - TJS support SLD parameters, either an url or the name of a geoserver style
 
 The above features have initially been developed by GeoCuba/GeoMix. Geonovum has added WFS support and has rewritten parts of the source code.
-Antea(r)Group upgraded this code for Geoserver 2.18, adding the POST request, adding the support of FilterColumn/FilterValue param and some another features.
+Antea(r)Group upgraded this code for Geoserver 2.25, adding the POST request, adding the support of FilterColumn/FilterValue param and some another features.
 
 Work in Progress
 ==========
@@ -81,5 +81,33 @@ After compilation, copy the following jars to {geoserver}/WEB-INF/lib/ :
 * tjs-web/target/tjs-web-{tjs.version}.jar
 * xsd-tjs/target/gt-xsd-tjs-{gt.version}.jar
 
+
+Using Eclipse
+=====================
+To use the TJS plugin in Eclipse, follow the general guidelines of GeoServer but don't import the projects in Eclipse yet, http://docs.geoserver.org/2.6.x/en/developer/quickstart/index.html
+
+Before importing the projects, you need to configure the TJS plugin for Eclipse as well:
+
+To add the TJS plugin:
+
+1. with a command line, setup the Eclipse project for TJS:
+
+cd src/community/tjs/
+
+mvn eclipse:eclipse
+
+2. Now import the project Geoserver from file, as described http://docs.geoserver.org/2.6.x/en/developer/quickstart/index.html. You should see 
+
+3. Run configuration:
+After the first Run configuration with Eclipse, the TJS plugin needs to be added manually to the Run configuration. You can do this by going to Run > Run configurations...
+There, add the TJS-projects to the Classpath, as projects:
+
+* net.opengis.tjs
+* tjs
+* tjsdata
+* tjs-web
+* xsd-tjs
+
+4. Running Geoserver with TJS should work now. NOTE: at this moment, there seems to be an issue using Eclipse's Run functionality, especially with the data dir configuration for TJS.
 
 
