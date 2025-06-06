@@ -5,9 +5,7 @@
 
 package gmx.iderc.geoserver.tjs.catalog;
 
-/**
- * @author root
- */
+/** @author root */
 public interface TJSCatalogFactory {
 
     public FrameworkInfo newFrameworkInfo();
@@ -15,5 +13,4 @@ public interface TJSCatalogFactory {
     public DatasetInfo newDataSetInfo();
 
     public DataStoreInfo newDataStoreInfo();
-
 }

@@ -5,13 +5,10 @@
 
 package gmx.iderc.geoserver.tjs.kvp;
 
+import java.util.Map;
 import net.opengis.tjs10.DescribeKeyType;
 
-import java.util.Map;
-
-/**
- * @author root
- */
+/** @author root */
 public class DescribeKeyKvpRequestReader extends TJSKvpRequestReader {
 
     public DescribeKeyKvpRequestReader() {
@@ -26,10 +23,8 @@ public class DescribeKeyKvpRequestReader extends TJSKvpRequestReader {
         if (kvp.containsKey("frameworkURI")) {
             describeKeyRequest.setFrameworkURI(kvp.get("frameworkURI").toString());
         }
-        //aqui se arreglan los parametros que pudieran venir incompletos en la solicitud
+        // aqui se arreglan los parametros que pudieran venir incompletos en la solicitud
 
         return describeKeyRequest;
     }
-
-
 }

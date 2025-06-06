@@ -7,12 +7,10 @@ package gmx.iderc.geoserver.tjs;
 
 import org.geoserver.config.impl.ServiceInfoImpl;
 
-/**
- * @author root
- */
+/** @author root */
 public class TJSInfoImpl extends ServiceInfoImpl implements TJSInfo {
     protected ServiceLevel serviceLevel = ServiceLevel.COMPLETE;
-    //protected ServiceLevel serviceLevel = ServiceLevel.BASIC;
+    // protected ServiceLevel serviceLevel = ServiceLevel.BASIC;
     protected boolean canonicalSchemaLocation = false;
 
     String tjsServerBaseURL;
@@ -44,5 +42,4 @@ public class TJSInfoImpl extends ServiceInfoImpl implements TJSInfo {
     public void setCanonicalSchemaLocation(boolean canonicalSchemaLocation) {
         this.canonicalSchemaLocation = canonicalSchemaLocation;
     }
-
 }

@@ -4,26 +4,23 @@
  */
 package gmx.iderc.geoserver.tjs.web.framework;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.wms.WMS;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-/**
- * Simple detachable model listing all the available workspaces
- */
+/** Simple detachable model listing all the available workspaces */
 @SuppressWarnings("serial")
 public class AssociatedWMSsModel extends LoadableDetachableModel {
 
     @Override
     protected Object load() {
-//        Catalog catalog = GeoServerApplication.get().getCatalog();
-//        ApplicationContext context = GeoServerApplication.get().getApplicationContext();
+        // Catalog catalog = GeoServerApplication.get().getCatalog();
+        // ApplicationContext context = GeoServerApplication.get().getApplicationContext();
         List<LayerInfo> layers = new ArrayList<LayerInfo>();
         try {
             WMS localWms = WMS.get();
@@ -40,6 +37,5 @@ public class AssociatedWMSsModel extends LoadableDetachableModel {
         public int compare(LayerInfo w1, LayerInfo w2) {
             return w1.getName().compareToIgnoreCase(w2.getName());
         }
-
     }
 }

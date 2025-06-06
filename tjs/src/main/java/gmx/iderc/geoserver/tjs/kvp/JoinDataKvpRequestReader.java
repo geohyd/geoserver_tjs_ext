@@ -6,23 +6,20 @@
 package gmx.iderc.geoserver.tjs.kvp;
 
 import gmx.iderc.geoserver.tjs.TJSException;
+import java.util.*;
+import java.util.Map;
+import java.util.logging.Logger;
 import net.opengis.tjs10.AttributeDataType;
 import net.opengis.tjs10.JoinDataType;
 import net.opengis.tjs10.MapStylingType;
 import net.opengis.tjs10.Tjs10Factory;
 
-import java.util.Map;
-
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/**
- * @author root
- */
+/** @author root */
 public class JoinDataKvpRequestReader extends TJSKvpRequestReader {
 
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(JoinDataKvpRequestReader.class.getPackage().getName());
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(
+                    JoinDataKvpRequestReader.class.getPackage().getName());
 
     public JoinDataKvpRequestReader() {
         super(JoinDataType.class);
@@ -53,7 +50,6 @@ public class JoinDataKvpRequestReader extends TJSKvpRequestReader {
         joinDataRequest.setAttributeData(adt);
 
         if (kvp.containsKey("StylingURL")) {
-            LOGGER.log(Level.INFO, "StylingURL: " + kvp.get("StylingURL").toString());
             MapStylingType mapStylingType = Tjs10Factory.eINSTANCE.createMapStylingType();
             mapStylingType.setStylingURL(kvp.get("StylingURL").toString());
             joinDataRequest.setMapStyling(mapStylingType);
@@ -61,6 +57,4 @@ public class JoinDataKvpRequestReader extends TJSKvpRequestReader {
 
         return request;
     }
-
-
 }

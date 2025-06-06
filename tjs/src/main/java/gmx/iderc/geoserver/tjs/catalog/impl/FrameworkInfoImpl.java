@@ -7,18 +7,15 @@ package gmx.iderc.geoserver.tjs.catalog.impl;
 import gmx.iderc.geoserver.tjs.catalog.FrameworkInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalogVisitor;
-import org.geoserver.catalog.*;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.catalog.*;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 
-/**
- * @author root
- */
+/** @author root */
 public class FrameworkInfoImpl extends TJSCatalogObjectImpl implements FrameworkInfo, Serializable {
 
     String featureTypeId;
@@ -32,8 +29,8 @@ public class FrameworkInfoImpl extends TJSCatalogObjectImpl implements Framework
     String relatedWMS;
     String wmsLayerId;
 
-    transient private FeatureTypeInfo featureType;
-    transient private LayerInfo wmsLayer;
+    private transient FeatureTypeInfo featureType;
+    private transient LayerInfo wmsLayer;
 
     public FrameworkInfoImpl(TJSCatalog catalog) {
         super(catalog);
@@ -44,12 +41,12 @@ public class FrameworkInfoImpl extends TJSCatalogObjectImpl implements Framework
         setId(TJSCatalogFactoryImpl.getIdForObject(this));
         setName("Default Framework Info");
         setDescription("Default Framework for testing propose.");
-//        setWorkspace(getDefaultWorkspace());
+        // setWorkspace(getDefaultWorkspace());
         DatasetInfoImpl dsi = new DatasetInfoImpl(getCatalog());
         dsi.loadDefault();
     }
 
-    //TODO: sobreescribir aqui no hace falta?
+    // TODO: sobreescribir aqui no hace falta?
     // Alvaro Javier Fuentes Suarez, 11:30 p.m. 1/8/13
     @Override
     public void accept(TJSCatalogVisitor visitor) {
@@ -139,7 +136,7 @@ public class FrameworkInfoImpl extends TJSCatalogObjectImpl implements Framework
         if (fti != null) {
             for (AttributeTypeInfo att : getAttributes(fti)) {
                 if (att.getName().equals(attName)) {
-                    if (att.getLength() == null){
+                    if (att.getLength() == null) {
                         att.setLength(new Integer(0));
                     }
                     return att;
@@ -190,5 +187,4 @@ public class FrameworkInfoImpl extends TJSCatalogObjectImpl implements Framework
         this.wmsLayer = wmsLayer;
         this.wmsLayerId = wmsLayer.getId();
     }
-
 }

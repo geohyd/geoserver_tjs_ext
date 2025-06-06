@@ -9,6 +9,8 @@ import gmx.iderc.geoserver.tjs.catalog.ColumnInfo;
 import gmx.iderc.geoserver.tjs.catalog.DatasetInfo;
 import gmx.iderc.geoserver.tjs.catalog.FrameworkInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
+import java.util.logging.Logger;
+import javax.xml.transform.TransformerException;
 import net.opengis.tjs10.*;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
@@ -16,25 +18,19 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
-import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.Operation;
-import org.geoserver.platform.Service;
 import org.geotools.xml.transform.TransformerBase;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
 
-import javax.xml.transform.TransformerException;
-import java.util.logging.Logger;
-
-/**
- * @author root
- */
-public class DefaultTableJoiningService implements TableJoiningService, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
+/** @author root */
+public class DefaultTableJoiningService
+        implements TableJoiningService,
+                ApplicationContextAware,
+                ApplicationListener<ContextRefreshedEvent> {
 
     private static Logger LOGGER = Logger.getLogger(DefaultTableJoiningService.class.getName());
 
@@ -64,10 +60,10 @@ public class DefaultTableJoiningService implements TableJoiningService, Applicat
     protected String getBaseURL() {
         try {
             Request owsRequest = ((ThreadLocal<Request>) Dispatcher.REQUEST).get();
-            if (owsRequest != null){
+            if (owsRequest != null) {
                 return owsRequest.getHttpRequest().getRequestURL().toString();
-            }else{
-                //ocurre cuando se realizan los test
+            } else {
+                // ocurre cuando se realizan los test
                 return "http://localhost:8080/geoserver/";
             }
         } catch (Exception ex) {
@@ -77,34 +73,36 @@ public class DefaultTableJoiningService implements TableJoiningService, Applicat
 
     void init() {
         deleteTJSTempWorkspace();
-        //remakeJoinedMaps();
+        // remakeJoinedMaps();
         GeoServerExtensions.getProperty("Servlet context parameter ");
     }
 
     private void remakeJoinedMaps() {
         for (FrameworkInfo frameworkInfo : catalog.getFrameworks()) {
             for (DatasetInfo datasetInfo : catalog.getDatasetsByFramework(frameworkInfo.getId())) {
-                if (datasetInfo.getAutoJoin()){
+                if (datasetInfo.getAutoJoin()) {
                     GetDataXMLType dataXMLType = Tjs10Factory.eINSTANCE.createGetDataXMLType();
                     dataXMLType.setFrameworkURI(frameworkInfo.getUri());
                     dataXMLType.setDatasetURI(datasetInfo.getDatasetUri());
                     String atts = null;
                     for (ColumnInfo columnInfo : datasetInfo.getColumns()) {
-                        if (atts != null){
-                            atts = atts + ","+columnInfo.getName();
-                        }else{
+                        if (atts != null) {
+                            atts = atts + "," + columnInfo.getName();
+                        } else {
                             atts = columnInfo.getName();
                         }
                     }
                     dataXMLType.setAttributes(atts);
 
                     JoinDataType joinDataType = Tjs10Factory.eINSTANCE.createJoinDataType();
-                    AttributeDataType attributeDataType =Tjs10Factory.eINSTANCE.createAttributeDataType();
+                    AttributeDataType attributeDataType =
+                            Tjs10Factory.eINSTANCE.createAttributeDataType();
                     attributeDataType.setGetDataXML(dataXMLType);
                     joinDataType.setAttributeData(attributeDataType);
 
                     TransformerBase transformerBase = this.JoinData(joinDataType);
-//                    Operation op = new Operation("JoinData", new Service("TJS",null,null,null),null, new Object[]{joinDataType});
+                    // Operation op = new Operation("JoinData", new
+                    // Service("TJS",null,null,null),null, new Object[]{joinDataType});
                     try {
                         String xmlData = transformerBase.transform(joinDataType);
                     } catch (TransformerException e) {
@@ -114,30 +112,30 @@ public class DefaultTableJoiningService implements TableJoiningService, Applicat
             }
         }
 
-/*
-        for (JoinedMapInfo map : catalog.getJoinedMaps()) {
-            DatasetInfo dsi = catalog.getDatasetByUri(map.getDatasetUri());
-            if (dsi != null && dsi.getAutoJoin() && (map.getCreationTime() + map.getLifeTime() > System.currentTimeMillis())) {
-                final String req = map.getServerURL() + "/ows?Service=TJS&Version=1.0&Request=JoinData" +
-                                           "&FrameworkUri=" + map.getFrameworkURI() + "&GetDataURL=" + map.getGetDataURL();
-                try {
-                    final URL url = new URL(req);
-                    final InputStream inputStream = url.openStream();
-                    final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                    String line;
-                    while ((line = reader.readLine()) != null)
-                        LOGGER.info(line);
-                    inputStream.close();
-                } catch (MalformedURLException e) {
-                    LOGGER.warning("No se pudo reconstruir el mapa " + map + " por " + e);
-                } catch (IOException e) {
-                    LOGGER.warning("Falló conexión para reconstruir el mapa " + map + " por " + e);
+        /*
+                for (JoinedMapInfo map : catalog.getJoinedMaps()) {
+                    DatasetInfo dsi = catalog.getDatasetByUri(map.getDatasetUri());
+                    if (dsi != null && dsi.getAutoJoin() && (map.getCreationTime() + map.getLifeTime() > System.currentTimeMillis())) {
+                        final String req = map.getServerURL() + "/ows?Service=TJS&Version=1.0&Request=JoinData" +
+                                                   "&FrameworkUri=" + map.getFrameworkURI() + "&GetDataURL=" + map.getGetDataURL();
+                        try {
+                            final URL url = new URL(req);
+                            final InputStream inputStream = url.openStream();
+                            final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                            String line;
+                            while ((line = reader.readLine()) != null)
+                                LOGGER.info(line);
+                            inputStream.close();
+                        } catch (MalformedURLException e) {
+                            LOGGER.warning("No se pudo reconstruir el mapa " + map + " por " + e);
+                        } catch (IOException e) {
+                            LOGGER.warning("Falló conexión para reconstruir el mapa " + map + " por " + e);
+                        }
+                    } else {
+                        catalog.remove(map);
+                    }
                 }
-            } else {
-                catalog.remove(map);
-            }
-        }
-*/
+        */
     }
 
     private void deleteTJSTempWorkspace() {
@@ -193,6 +191,6 @@ public class DefaultTableJoiningService implements TableJoiningService, Applicat
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        //remakeJoinedMaps();
+        // remakeJoinedMaps();
     }
 }

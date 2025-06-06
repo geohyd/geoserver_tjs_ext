@@ -5,32 +5,23 @@
 package gmx.iderc.geoserver.tjs;
 
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
-import net.opengis.tjs10.JoinDataType;
-import net.opengis.tjs10.VersionType2;
-import org.geoserver.ows.util.RequestUtils;
-import org.geotools.xml.transform.TransformerBase;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.opengis.tjs10.JoinDataType;
+import net.opengis.tjs10.VersionType2;
+import org.geoserver.ows.util.RequestUtils;
+import org.geotools.xml.transform.TransformerBase;
 
-
-/**
- * Table Joining Service DescribeData operation.
- */
+/** Table Joining Service DescribeData operation. */
 public class JoinData {
-    /**
-     * Catalog reference
-     */
+    /** Catalog reference */
     private TJSCatalog catalog;
 
-    /**
-     * TJS service
-     */
+    /** TJS service */
     private TJSInfo tjs;
-
 
     public JoinData(TJSInfo tjs, TJSCatalog catalog) {
         this.catalog = catalog;
@@ -61,12 +52,11 @@ public class JoinData {
         return versions;
     }
 
-    public TransformerBase run(JoinDataType request)
-            throws TJSException {
+    public TransformerBase run(JoinDataType request) throws TJSException {
 
         List<String> provided = new ArrayList<String>();
         provided.add("1.0.0");
-//        provided.add("1.1.0");
+        // provided.add("1.1.0");
         List<String> requested = new ArrayList<String>();
 
         if (request.getVersion() != null)
@@ -83,7 +73,8 @@ public class JoinData {
             throw new TJSException("Could not understand version:" + version);
         }
         try {
-            jdTransformer.setEncoding(Charset.forName(tjs.getGeoServer().getGlobal().getCharset()));
+            jdTransformer.setEncoding(
+                    Charset.forName(tjs.getGeoServer().getGlobal().getSettings().getCharset()));
         } catch (Exception ex) {
             Logger.getLogger(JoinData.class.getName()).log(Level.SEVERE, ex.getMessage());
         }

@@ -4,9 +4,9 @@ package org.geotools.tjs.bindings;
 import net.opengis.tjs10.OutputMechanismsType;
 import net.opengis.tjs10.Tjs10Factory;
 import org.geotools.tjs.TJS;
-import org.geotools.xml.AbstractComplexEMFBinding;
-import org.geotools.xml.ElementInstance;
-import org.geotools.xml.Node;
+import org.geotools.xsd.AbstractComplexEMFBinding;
+import org.geotools.xsd.ElementInstance;
+import org.geotools.xsd.Node;
 
 import javax.xml.namespace.QName;
 

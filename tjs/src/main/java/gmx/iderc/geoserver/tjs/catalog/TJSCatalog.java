@@ -6,15 +6,12 @@
 package gmx.iderc.geoserver.tjs.catalog;
 
 import gmx.iderc.geoserver.tjs.data.TJSDataAccessFactory;
+import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 
-import java.util.List;
-
-/**
- * @author root
- */
+/** @author root */
 public interface TJSCatalog {
 
     TJSCatalogFactory getFactory();
@@ -76,7 +73,6 @@ public interface TJSCatalog {
     <T extends DatasetInfo> T getDatasetByUri(String uri);
 
     DatasetInfo getDatasetByFramework(String frameworkId, String name);
-
 
     List<NamespaceInfo> getNamespaces();
 

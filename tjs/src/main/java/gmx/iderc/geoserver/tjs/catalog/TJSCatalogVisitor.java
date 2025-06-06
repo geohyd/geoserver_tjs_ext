@@ -11,24 +11,16 @@ package gmx.iderc.geoserver.tjs.catalog;
  */
 public interface TJSCatalogVisitor {
 
-    /**
-     * Visits the catalog
-     */
+    /** Visits the catalog */
     void visit(TJSCatalog catalog);
 
-    /**
-     * Visits a framework.
-     */
+    /** Visits a framework. */
     void visit(FrameworkInfo framework);
 
-    /**
-     * Visits a dataStore.
-     */
+    /** Visits a dataStore. */
     void visit(DataStoreInfo dataStore);
 
-    /**
-     * Visits a dataset.
-     */
+    /** Visits a dataset. */
     void visit(DatasetInfo dataset);
 
     /**

@@ -9,13 +9,15 @@ import gmx.iderc.geoserver.tjs.TJSExtension;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import org.geoserver.web.GeoServerSecuredPage;
 
-/**
- * @author root
- */
+/** @author root */
 public class TJSBasePage extends GeoServerSecuredPage {
 
     protected TJSCatalog getTJSCatalog() {
         return TJSExtension.getTJSCatalog();
     }
 
+    // Antea : For force to reload from persistente file
+    protected TJSCatalog reloadTJSCatalog() {
+        return TJSExtension.reloadTJSCatalog();
+    }
 }

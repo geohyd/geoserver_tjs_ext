@@ -6,13 +6,13 @@ Original README from thijsbrentjens :
 
 Table Joining Services extension
 =====================
-The community plugin TJS will add support for Table Joining Services v 1.0.0 to Geoserver. Code is based on code of GeoCuba/GeoMix, imported by Thijs Brentjens (for Geonovum) on request of GeoCuba/GeoMix. Support for WFS output and refactoring to imrpove WMS support has been done for Geonovum.
+This is an upgrade of the community plugin TJS for Geoserver 2.18 on request of DREAL Corse. Code is based on code of Thijs Brentjens.
 
-This extension is under development. Please read this carefully. Any feedback is welcome.
+This extension is still under development. Please read this carefully. Any feedback is welcome.
 
 Features
 ========
-The TJS extension adds TJS support to Geoserver (2.7.x at the moment). It adds TJS operations to join data and adds web administration options. The web admin allows for management / configuration of:
+The TJS extension adds TJS support to Geoserver (2.25.2 at the moment). It adds TJS operations to join data and adds web administration options. The web admin allows for management / configuration of:
 - spatial frameworks (spatial datasets to join data on) and non-spatial tabular data to be published in GDAS encoding
 - pre-configured joins.
 
@@ -21,20 +21,33 @@ The TJS OGC webservice interface of this extension supports almost all TJS opera
 - getting data in GDAS encoding
 - creating joins using JoinData
 - output of joins as WMS layers, WFS featuretypes. The TJS extension has (some) support for SLD, but this is untested currently
+- TJS support SLD parameters, either an url or the name of a geoserver style
 
 The above features have initially been developed by GeoCuba/GeoMix. Geonovum has added WFS support and has rewritten parts of the source code.
+Antea(r)Group upgraded this code for Geoserver 2.25, adding the POST request, adding the support of FilterColumn/FilterValue param and some another features.
 
 Work in Progress
 ==========
-The TJS extension is still under development. It has not been tested extensively yet. Testers on different systems / platforms are welcomed. Please contact Thijs with any questions: 
-
-t dot brentjens at geonovum dot nl.
+The TJS extension is still under development. It has not been tested extensively yet. Testers on different systems / platforms are welcomed.
 
 Among things to do are:
 
 - support for management of joined output files and removing joins / clearing the cache after a pre-configured time
 - user manual
 - fix tests for the postgres connection of data stores, make it file-based
+- Upgrade test code
+- Fix the exception when click on previous page
+- Fix the exception on the DescribeJoinAbilities XML Post request
+- Rewrite/clear the bean for the POST request
+- Fix the use of deprecated functions in TJS and TJSDATA
+
+Other remarks :
+
+- Be careful to encode special characters in the url, such as '#' at '% 23'
+- The list of attributes to return in getData requests must correspond to the initial order of the attributes (provided by the DescribeData). Otherwise, an interpretation error may be made by the plugin (when filtering data via FilterColumn / FilterValue for example)
+- If the style URL does not start with an "http", consider it to be a geoserver style and do not make http requests, instead get the catalog style and set it to define a new one.
+- In the dataset view, we only add the dataset created by the user. The DataSet created by joindata is not added (instead, the datasetEditPage can read a dataset created by a joindata - at this time, this throws an exception); see tjs\tjs-web\src\main\java\gmx\iderc\geoserver\tjs\web\dataset\DatasetProvider.java, getItems() function.
+
 
 Related projects
 ===========
@@ -46,16 +59,11 @@ The Geodetic institute of Slovenia has created support for TJS in it's STAGE cli
 
 Installation
 =====================
-The libraries for the TJS extension can be build from the community/tjs/ directory, see Compilation below.
+The libraries for the TJS extension can be build from the root directory, see Compilation below.
 
 Compilation
 =====================
-Follow the general build instructions of Geoserver.
-To build the TJS plugin seperately, go to the directory 
-
-```
-src/community/tjs/
-```
+To build the TJS plugin, go to the root directory 
 
 and build using the regular command:
 
@@ -101,8 +109,5 @@ There, add the TJS-projects to the Classpath, as projects:
 * xsd-tjs
 
 4. Running Geoserver with TJS should work now. NOTE: at this moment, there seems to be an issue using Eclipse's Run functionality, especially with the data dir configuration for TJS.
-
-
-
 
 

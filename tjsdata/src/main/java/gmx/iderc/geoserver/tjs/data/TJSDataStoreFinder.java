@@ -16,8 +16,8 @@
  */
 package gmx.iderc.geoserver.tjs.data;
 
-import org.geotools.factory.FactoryCreator;
-import org.geotools.factory.FactoryRegistry;
+import org.geotools.util.factory.FactoryCreator;
+import org.geotools.util.factory.FactoryRegistry;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 
 /**
@@ -94,7 +95,7 @@ public final class TJSDataStoreFinder {
      * @return An iterator over all discovered datastores which have registered
      *         factories
      */
-    public static synchronized Iterator<TJSDataStoreFactorySpi> getAllDataStores() {
+    public static synchronized Stream<TJSDataStoreFactorySpi> getAllDataStores() {
         return TJSDataAccessFinder.getAllDataStores(getServiceRegistry(), TJSDataStoreFactorySpi.class);
     }
 

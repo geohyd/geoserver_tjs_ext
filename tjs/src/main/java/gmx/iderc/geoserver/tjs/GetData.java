@@ -5,32 +5,23 @@
 package gmx.iderc.geoserver.tjs;
 
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
-import net.opengis.tjs10.GetDataType;
-import net.opengis.tjs10.VersionType2;
-import org.geoserver.ows.util.RequestUtils;
-import org.geotools.xml.transform.TransformerBase;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.opengis.tjs10.GetDataType;
+import net.opengis.tjs10.VersionType2;
+import org.geoserver.ows.util.RequestUtils;
+import org.geotools.xml.transform.TransformerBase;
 
-
-/**
- * Table Joinning Service GetData operation.
- */
+/** Table Joinning Service GetData operation. */
 public class GetData {
-    /**
-     * Catalog reference
-     */
+    /** Catalog reference */
     private TJSCatalog catalog;
 
-    /**
-     * TJS service
-     */
+    /** TJS service */
     private TJSInfo tjs;
-
 
     public GetData(TJSInfo tjs, TJSCatalog catalog) {
         this.catalog = catalog;
@@ -61,12 +52,11 @@ public class GetData {
         return versions;
     }
 
-    public TransformerBase run(GetDataType request)
-            throws TJSException {
+    public TransformerBase run(GetDataType request) throws TJSException {
 
         List<String> provided = new ArrayList<String>();
         provided.add("1.0.0");
-//        provided.add("1.1.0");
+        // provided.add("1.1.0");
         List<String> requested = new ArrayList<String>();
 
         if (request.getVersion() != null)
@@ -83,7 +73,8 @@ public class GetData {
             throw new TJSException("Could not understand version:" + version);
         }
         try {
-            dfTransformer.setEncoding(Charset.forName(tjs.getGeoServer().getGlobal().getCharset()));
+            dfTransformer.setEncoding(
+                    Charset.forName(tjs.getGeoServer().getGlobal().getSettings().getCharset()));
         } catch (Exception ex) {
             Logger.getLogger(GetData.class.getName()).log(Level.SEVERE, ex.getMessage());
         }

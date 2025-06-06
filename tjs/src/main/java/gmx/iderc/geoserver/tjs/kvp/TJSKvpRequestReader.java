@@ -4,18 +4,15 @@
  */
 package gmx.iderc.geoserver.tjs.kvp;
 
-//import net.opengis.wfs.WfsFactory;
+// import net.opengis.wfs.WfsFactory;
 
 import net.opengis.tjs10.Tjs10Factory;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 
-
 /**
  * Web Feature Service Key Value Pair Request reader.
- * <p>
- * This request reader makes use of the Eclipse Modelling Framework
- * reflection api.
- * </p>
+ *
+ * <p>This request reader makes use of the Eclipse Modelling Framework reflection api.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

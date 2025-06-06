@@ -1,20 +1,15 @@
 package gmx.iderc.geoserver.tjs.data.gdas;
 
-import gmx.iderc.geoserver.tjs.catalog.ColumnInfo;
 import gmx.iderc.geoserver.tjs.data.xml.ClassToXSDMapper;
+import java.io.Serializable;
 import net.opengis.tjs10.ColumnType1;
 import net.opengis.tjs10.GDASType;
 
-import java.util.Map;
-
 /**
- * Created with IntelliJ IDEA.
- * User: capote
- * Date: 30/07/13
- * Time: 14:08
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: capote Date: 30/07/13 Time: 14:08 To change this template use
+ * File | Settings | File Templates.
  */
-public class GDAS_ColumnInfo extends ReadonlyColumnInfo {
+public class GDAS_ColumnInfo extends ReadonlyColumnInfo implements Serializable {
 
     transient GDASType gdasType;
     transient ColumnType1 columnType;
@@ -25,7 +20,9 @@ public class GDAS_ColumnInfo extends ReadonlyColumnInfo {
 
     @Override
     public String getName() {
-        return columnType.getName();  //To change body of implemented methods use File | Settings | File Templates.
+        return columnType
+                .getName(); // To change body of implemented methods use File | Settings | File
+        // Templates.
     }
 
     public String getSafeColumnName() {
@@ -34,7 +31,7 @@ public class GDAS_ColumnInfo extends ReadonlyColumnInfo {
         // and cut off ythe length?
         // TODO: if the columnname already exists, then add a number
         if (columnName.length() >= 32) {
-            columnName = columnName.substring(0,31);
+            columnName = columnName.substring(0, 31);
         }
         return columnName;
     }
@@ -72,7 +69,7 @@ public class GDAS_ColumnInfo extends ReadonlyColumnInfo {
     @Override
     public String getValueUOM() {
         return "";
-        //return columnType.getValues().;
+        // return columnType.getValues().;
     }
 
     @Override

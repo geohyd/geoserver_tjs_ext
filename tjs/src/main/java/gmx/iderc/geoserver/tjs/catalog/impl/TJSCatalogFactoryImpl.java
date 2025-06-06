@@ -9,18 +9,15 @@ import gmx.iderc.geoserver.tjs.catalog.DataStoreInfo;
 import gmx.iderc.geoserver.tjs.catalog.DatasetInfo;
 import gmx.iderc.geoserver.tjs.catalog.FrameworkInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalogFactory;
+import java.rmi.server.UID;
 import org.geoserver.ows.util.OwsUtils;
 
-import java.rmi.server.UID;
-
-/**
- * @author root
- */
+/** @author root */
 public class TJSCatalogFactoryImpl implements TJSCatalogFactory {
 
     TJSCatalogImpl catalog;
 
-    static public String getIdForObject(Object o) {
+    public static String getIdForObject(Object o) {
         String uid = new UID().toString();
         return o.getClass().getSimpleName() + "-" + uid;
     }
@@ -49,5 +46,4 @@ public class TJSCatalogFactoryImpl implements TJSCatalogFactory {
     public DataStoreInfo newDataStoreInfo() {
         return (DataStoreInfo) setId(new DataStoreInfoImpl(this.catalog));
     }
-
 }

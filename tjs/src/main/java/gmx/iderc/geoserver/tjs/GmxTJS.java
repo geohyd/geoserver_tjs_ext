@@ -5,19 +5,17 @@
 
 package gmx.iderc.geoserver.tjs;
 
+import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
-/**
- * @author root
- */
+/** @author root */
 public class GmxTJS {
 
-    public GmxTJS() {
-    }
+    public GmxTJS() {}
 
-    public void findRoute(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void findRoute(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         response.getOutputStream().println("find route service");
     }
 }

@@ -1,11 +1,11 @@
 package gmx.iderc.geoserver.tjs.data;
 
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.factory.Hints;
+import org.geotools.util.factory.Hints;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.filter.expression.PropertyAccessorFactory;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Literal;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Literal;
 
 import javax.sql.RowSet;
 
@@ -26,7 +26,8 @@ public class RowSetPropertyAccessorFactory implements PropertyAccessorFactory {
     }
 
     static class RowSetPropertyAccessor implements PropertyAccessor {
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
+        //FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
         public boolean canHandle(Object object, String xpath, Class target) {
             if (object instanceof RowSet) {

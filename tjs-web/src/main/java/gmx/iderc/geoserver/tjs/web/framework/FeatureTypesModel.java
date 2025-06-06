@@ -4,19 +4,16 @@
  */
 package gmx.iderc.geoserver.tjs.web.framework;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.web.GeoServerApplication;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-/**
- * Simple detachable model listing all the available workspaces
- */
+/** Simple detachable model listing all the available workspaces */
 @SuppressWarnings("serial")
 public class FeatureTypesModel extends LoadableDetachableModel {
     @Override
@@ -32,6 +29,5 @@ public class FeatureTypesModel extends LoadableDetachableModel {
         public int compare(FeatureTypeInfo w1, FeatureTypeInfo w2) {
             return w1.getName().compareToIgnoreCase(w2.getName());
         }
-
     }
 }

@@ -5,7 +5,7 @@
 
 package gmx.iderc.geoserver.tjs.data;
 
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 import javax.sql.RowSet;
 import java.sql.ResultSetMetaData;

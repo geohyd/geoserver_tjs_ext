@@ -7,39 +7,35 @@ package gmx.iderc.geoserver.tjs.web;
 import gmx.iderc.geoserver.tjs.TJSExtensionTestSupport;
 import gmx.iderc.geoserver.tjs.TJSTestSupport;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.data.test.MockData;
-import org.geoserver.data.util.IOUtils;
-import org.geoserver.web.GeoServerWicketTestSupport;
-
-import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
+import javax.xml.namespace.QName;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.util.IOUtils;
+import org.geoserver.web.GeoServerWicketTestSupport;
 
-/**
- * @author root
- */
+/** @author root */
 public abstract class TJSWicketTestSupport extends GeoServerWicketTestSupport {
 
     TJSCatalog tjsCatalog;
-    public static QName PROVINCIAS = new QName(MockData.CITE_URI, "Provincias", MockData.CITE_PREFIX);
+    public static QName PROVINCIAS =
+            new QName(MockData.CITE_URI, "Provincias", MockData.CITE_PREFIX);
 
-    
     public void oneTimeSetUp() throws Exception {
-        //super.oneTimeSetUp();
+        // super.oneTimeSetUp();
         super.doSetup();
-        //tjsCatalog.setCatalog(catalog);
+        // tjsCatalog.setCatalog(catalog);
         tjsCatalog = TJSExtensionTestSupport.getTJSCatalog(getTestPersistenceDirectory());
         FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(PROVINCIAS.getLocalPart());
         tjsCatalog.getFrameworks().get(0).setFeatureType(fti);
         tjsCatalog.save();
     }
 
-    
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        //super.populateDataDirectory(dataDirectory);
+        // super.populateDataDirectory(dataDirectory);
         URL resUrl = TJSTestSupport.class.getResource("Provincias.properties");
         dataDirectory.addPropertiesType(PROVINCIAS, resUrl, Collections.EMPTY_MAP);
 

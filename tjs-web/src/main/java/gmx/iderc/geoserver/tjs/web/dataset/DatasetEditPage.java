@@ -4,6 +4,8 @@
  */
 package gmx.iderc.geoserver.tjs.web.dataset;
 
+import static gmx.iderc.geoserver.tjs.web.columns.ColumnsProvider.*;
+
 import gmx.iderc.geoserver.tjs.TJSExtension;
 import gmx.iderc.geoserver.tjs.catalog.*;
 import gmx.iderc.geoserver.tjs.data.TJSDataStore;
@@ -11,36 +13,34 @@ import gmx.iderc.geoserver.tjs.data.TJSDatasource;
 import gmx.iderc.geoserver.tjs.web.TJSBasePage;
 import gmx.iderc.geoserver.tjs.web.columns.ColumnEditPage;
 import gmx.iderc.geoserver.tjs.web.columns.ColumnsProvider;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.form.DateTextField;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.geoserver.web.wicket.XMLNameValidator;
-import org.geotools.util.NullProgressListener;
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import static gmx.iderc.geoserver.tjs.web.columns.ColumnsProvider.*;
+import org.geotools.data.util.NullProgressListener;
 
 /**
- * A page listing the resources contained in a store, and whose links will bring
- * the user to a new resource configuration page
+ * A page listing the resources contained in a store, and whose links will bring the user to a new
+ * resource configuration page
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -48,32 +48,34 @@ import static gmx.iderc.geoserver.tjs.web.columns.ColumnsProvider.*;
 public class DatasetEditPage extends TJSBasePage {
 
     Form form;
+    FeedbackPanel fp;
     GeoServerTablePanel<ColumnInfo> columns;
 
     public DatasetEditPage(PageParameters parameters) {
-        String dataStoreId = parameters.getString("dataStoreId");
-        String datasetName = parameters.getString("datasetName");
-//    public DatasetEditPage(String dataStoreId, String datasetName) {
+        // String dataStoreId = parameters.getString("dataStoreId");
+        // String datasetName = parameters.getString("datasetName");
+        String dataStoreId = parameters.get("dataStoreId").toString();
+        String datasetName = parameters.get("datasetName").toString();
 
         DatasetInfo datasetInfo = getTJSCatalog().getDataset(dataStoreId, datasetName);
         final ColumnsProvider provider = new ColumnsProvider(datasetInfo);
 
         final IModel model = new CompoundPropertyModel(datasetInfo);
-        form = new Form("form", model) {
+        form =
+                new Form("form", model) {
 
-            @Override
-            protected void onSubmit() {
-                TJSCatalog catalog = getTJSCatalog();
-                DatasetInfo dsi = (DatasetInfo) form.getModelObject();
-                catalog.save(dsi);
-                setResponsePage(DatasetPage.class);
+                    @Override
+                    protected void onSubmit() {
+                        TJSCatalog catalog = getTJSCatalog();
+                        DatasetInfo dsi = (DatasetInfo) form.getModelObject();
+                        catalog.save(dsi);
+                        setResponsePage(DatasetPage.class);
 
-                if (dsi.getAutoJoin()) {
-                    joinMap(dsi);
-                }
-
-            }
-        };
+                        if (dsi.getAutoJoin()) {
+                            joinMap(dsi);
+                        }
+                    }
+                };
         add(form);
 
         TextField<String> nameTextField = new TextField<String>("name");
@@ -81,16 +83,32 @@ public class DatasetEditPage extends TJSBasePage {
         nameTextField.add(new XMLNameValidator());
         form.add(nameTextField.setRequired(true));
 
-        DataStoreInfo dataStoreInfo = datasetInfo.getDataStore();
-        TJSDataStore store = dataStoreInfo.getTJSDataStore(new NullProgressListener());
-        TJSDatasource tJSDatasource = store.getDatasource(datasetInfo.getDatasetName(), dataStoreInfo.getConnectionParameters());
-        String[] fields = tJSDatasource.getFields();
-        List<String> fieldList = Arrays.asList(fields);
+        fp = new FeedbackPanel("feedback");
+        fp.setOutputMarkupId(true);
+        form.add(fp);
+        try {
+            DataStoreInfo dataStoreInfo = datasetInfo.getDataStore();
+            TJSDataStore store = dataStoreInfo.getTJSDataStore(new NullProgressListener());
+            TJSDatasource tJSDatasource =
+                    store.getDatasource(
+                            datasetInfo.getDatasetName(), dataStoreInfo.getConnectionParameters());
+            String[] fields = tJSDatasource.getFields();
+            List<String> fieldList = Arrays.asList(fields);
 
-        DropDownChoice<String> geoKeyfield = new DropDownChoice<String>("geoKeyField", fieldList);
-        form.add(geoKeyfield);
+            DropDownChoice<String> geoKeyfield =
+                    new DropDownChoice<String>("geoKeyField", fieldList);
+            form.add(geoKeyfield);
+        } catch (Exception e) {
+            DropDownChoice<String> geoKeyfield =
+                    new DropDownChoice<String>("geoKeyField", new ArrayList<>());
+            form.add(geoKeyfield);
+            form.error("Cannot connect to DataStore configuration");
+        }
 
-        DropDownChoice<String> framework = new DropDownChoice<String>("framework", new FrameworkListModel(), new FrameworkListRenderer());
+        DropDownChoice<String> framework =
+                new DropDownChoice<String>(
+                        "framework", new FrameworkListModel(), new ChoiceRenderer("name", "id"));
+        // "framework", new FrameworkListModel(), new FrameworkListRenderer());
         form.add(framework);
 
         TextField<String> descriptionTextField = new TextField<String>("description");
@@ -107,39 +125,42 @@ public class DatasetEditPage extends TJSBasePage {
         form.add(versionTextField.setRequired(false));
 
         TextField<String> documentationTextField = new TextField<String>("documentation");
-        documentationTextField.add(new StringValidator() {
-
-            @Override
-            protected void onValidate(IValidatable<String> paramIValidatable) {
-                try {
-                    URI uri = new URI(paramIValidatable.getValue());
-                } catch (URISyntaxException ex) {
-                    error(paramIValidatable, "badUriError");
-                }
-            }
-        });
+        documentationTextField.add(
+                new StringValidator() {
+                    @Override
+                    public void validate(IValidatable<String> validatable) {
+                        try {
+                            URI uri = new URI(validatable.getValue());
+                        } catch (URISyntaxException ex) {
+                            validatable.error(new ValidationError("badDocumentationUriError"));
+                        }
+                    }
+                });
         form.add(documentationTextField.setRequired(false));
 
-        //selector para estilos por defecto del dataset, Alvaro Javier
-        DropDownChoice defaultStyleChoice = new DropDownChoice("defaultStyle",
-                                                                      new LoadableDetachableModel() {
-                                                                          @Override
-                                                                          protected Object load() {
-                                                                              List<StyleInfo> styles = getCatalog().getStyles();
-                                                                              List<String> stylesNames = new ArrayList<String>(styles.size());
-                                                                              for (StyleInfo si : styles) {
-                                                                                  stylesNames.add(si.getName());
-                                                                              }
-                                                                              Collections.sort(stylesNames, new Comparator<String>() {
-                                                                                  @Override
-                                                                                  public int compare(String s1, String s2) {
-                                                                                      return s1.compareToIgnoreCase(s2);
-                                                                                  }
-                                                                              });
-                                                                              return stylesNames;
-                                                                          }
-                                                                      }
-        );
+        // selector para estilos por defecto del dataset, Alvaro Javier
+        DropDownChoice defaultStyleChoice =
+                new DropDownChoice(
+                        "defaultStyle",
+                        new LoadableDetachableModel() {
+                            @Override
+                            protected Object load() {
+                                List<StyleInfo> styles = getCatalog().getStyles();
+                                List<String> stylesNames = new ArrayList<String>(styles.size());
+                                for (StyleInfo si : styles) {
+                                    stylesNames.add(si.getName());
+                                }
+                                Collections.sort(
+                                        stylesNames,
+                                        new Comparator<String>() {
+                                            @Override
+                                            public int compare(String s1, String s2) {
+                                                return s1.compareToIgnoreCase(s2);
+                                            }
+                                        });
+                                return stylesNames;
+                            }
+                        });
         form.add(defaultStyleChoice);
 
         CheckBox autoJoinChk = new CheckBox("autoJoin", new PropertyModel(model, "autoJoin"));
@@ -148,42 +169,48 @@ public class DatasetEditPage extends TJSBasePage {
         CheckBox enabledChk = new CheckBox("enabled", new PropertyModel(model, "enabled"));
         form.add(enabledChk);
 
-        columns = new GeoServerTablePanel<ColumnInfo>("columns", provider, true) {
+        columns =
+                new GeoServerTablePanel<ColumnInfo>("columns", provider, true) {
 
-            @Override
-            protected Component getComponentForProperty(String id, IModel itemModel, Property<ColumnInfo> property) {
-                if (property == NAME) {
-                    return columnLink(id, itemModel);
-                } else if (property == TITLE) {
-                    return new Label(id, TITLE.getModel(itemModel));
-                } else if (property == TYPE) {
-                    return new Label(id, TYPE.getModel(itemModel));
-                }
-                throw new IllegalArgumentException("Don't know a property named " + property.getName());
-            }
-
-        };
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id,
+                            IModel<ColumnInfo> itemModel,
+                            Property<ColumnInfo> property) {
+                        if (property == NAME) {
+                            return columnLink(id, itemModel);
+                        } else if (property == TITLE) {
+                            return new Label(id, TITLE.getModel(itemModel));
+                        } else if (property == TYPE) {
+                            return new Label(id, TYPE.getModel(itemModel));
+                        }
+                        throw new IllegalArgumentException(
+                                "Don't know a property named " + property.getName());
+                    }
+                };
         add(columns);
 
         SubmitLink submitLink = new SubmitLink("save", form);
         form.add(submitLink);
         form.setDefaultButton(submitLink);
 
-        AjaxLink cancelLink = new AjaxLink("cancel") {
+        AjaxLink cancelLink =
+                new AjaxLink("cancel") {
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                setResponsePage(DatasetPage.class);
-            }
-        };
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        setResponsePage(DatasetPage.class);
+                    }
+                };
         form.add(cancelLink);
     }
 
     private void joinMap(DatasetInfo dsi) {
-
-        final ServletWebRequest servletWebRequest = (ServletWebRequest) getRequest();
-        final String url = servletWebRequest.getHttpServletRequest().getRequestURL().toString();
-        final String baseURL = url.substring(0, url.indexOf("/web/") + 1);//+1 para dejarle el / final
+        // final ServletWebRequest servletWebRequest = (ServletWebRequest) getRequest();
+        // final String url = servletWebRequest.getHttpServletRequest().getRequestURL().toString();
+        final String url = getRequest().getUrl().toString();
+        final String baseURL =
+                url.substring(0, url.indexOf("/web/") + 1); // +1 para dejarle el / final
 
         StringBuilder attributes = new StringBuilder("");
         for (ColumnInfo ci : dsi.getColumns()) {
@@ -191,24 +218,31 @@ public class DatasetEditPage extends TJSBasePage {
             attributes.append(",");
         }
         if (!attributes.equals("")) {
-            attributes.deleteCharAt(attributes.length() - 1);//borrar la coma del final
+            attributes.deleteCharAt(attributes.length() - 1); // borrar la coma del final
         }
 
-        final String getDataURL = baseURL +
-                                          "ows?Service=TJS&Version=1.0&Request=GetData&FrameworkURI=" + dsi.getFramework().getUri() +
-                                          "&DatasetURI=" + dsi.getDatasetUri() +
-                                          "&attributes=" + attributes.toString();
+        final String getDataURL =
+                baseURL
+                        + "ows?Service=TJS&Version=1.0&Request=GetData&FrameworkURI="
+                        + dsi.getFramework().getUri()
+                        + "&DatasetURI="
+                        + dsi.getDatasetUri()
+                        + "&attributes="
+                        + attributes.toString();
 
         String encodedGetDataURL = "";
         try {
             encodedGetDataURL = URLEncoder.encode(getDataURL, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            ;//no dería acurrir nunca
+        } catch (UnsupportedEncodingException e) {; // no dería acurrir nunca
         }
 
-        final String request = baseURL + "ows?Service=TJS&Version=1.0&Request=JoinData"
-                                       + "&FrameworkURI=" + dsi.getFramework().getUri()
-                                       + "&GetDataURL=" + encodedGetDataURL;
+        final String request =
+                baseURL
+                        + "ows?Service=TJS&Version=1.0&Request=JoinData"
+                        + "&FrameworkURI="
+                        + dsi.getFramework().getUri()
+                        + "&GetDataURL="
+                        + encodedGetDataURL;
 
         try {
             final URL reqURL = new URL(request);
@@ -216,15 +250,11 @@ public class DatasetEditPage extends TJSBasePage {
             LOGGER.info("Respuesta de join Data:");
             final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
-            while ((line = reader.readLine()) != null)
-                LOGGER.info(line);
+            while ((line = reader.readLine()) != null) LOGGER.info(line);
             inputStream.close();
-        } catch (MalformedURLException e) {
-            ;
-        } catch (IOException e) {
-            ;
+        } catch (MalformedURLException e) {;
+        } catch (IOException e) {;
         }
-
     }
 
     private Component columnLink(String id, final IModel model) {
@@ -237,8 +267,7 @@ public class DatasetEditPage extends TJSBasePage {
         params.add("dataStoreId", dsi.getDataStore().getId());
         params.add("datasetName", dsi.getName());
         params.add("columnName", (String) nameModel.getObject());
-        return new SimpleBookmarkableLink(id, ColumnEditPage.class, nameModel,
-                                                 params);
+        return new SimpleBookmarkableLink(id, ColumnEditPage.class, nameModel, params);
     }
 
     class FrameworkListModel extends LoadableDetachableModel {
@@ -259,7 +288,7 @@ public class DatasetEditPage extends TJSBasePage {
         }
     }
 
-    class FrameworkListRenderer implements IChoiceRenderer {
+    /*class FrameworkListRenderer<T> implements IChoiceRenderer {
 
         public Object getDisplayValue(Object object) {
             return ((FrameworkInfo) object).getName();
@@ -268,5 +297,12 @@ public class DatasetEditPage extends TJSBasePage {
         public String getIdValue(Object object, int index) {
             return ((FrameworkInfo) object).getId();
         }
-    }
+
+        @Override
+        public T getObject(String id, IModel choices) {
+            return ((IModel<? extends List<? extends T>>) choices)
+                    .getObject()
+                    .get(Integer.parseInt(id));
+        }
+    }*/
 }

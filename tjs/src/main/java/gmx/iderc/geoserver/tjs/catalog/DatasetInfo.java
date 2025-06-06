@@ -6,13 +6,10 @@
 package gmx.iderc.geoserver.tjs.catalog;
 
 import gmx.iderc.geoserver.tjs.data.TJSDatasource;
-
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author root
- */
+/** @author root */
 public interface DatasetInfo extends TJSCatalogObject {
 
     FrameworkInfo getFramework();
@@ -62,5 +59,4 @@ public interface DatasetInfo extends TJSCatalogObject {
     boolean getAutoJoin();
 
     void setAutoJoin(boolean autoJoin);
-
 }

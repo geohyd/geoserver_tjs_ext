@@ -5,16 +5,13 @@
 
 package gmx.iderc.geoserver.tjs.catalog;
 
+import java.util.Date;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
-import java.util.Date;
-
-/**
- * @author root
- */
+/** @author root */
 public interface FrameworkInfo extends TJSCatalogObject {
 
     FeatureTypeInfo getFeatureType();
@@ -56,5 +53,4 @@ public interface FrameworkInfo extends TJSCatalogObject {
     LayerInfo getAssociatedWMS();
 
     void setAssociatedWMS(LayerInfo wmsLayer);
-
 }

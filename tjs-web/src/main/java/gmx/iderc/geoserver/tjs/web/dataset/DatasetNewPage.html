@@ -36,6 +36,14 @@
                 <input wicket:id="documentation" id="documentation" type="text" size="120"/>
             </li>
             <li>
+                <label for="defaultStyle">Default Style</label>
+                <select class="text" wicket:id="defaultStyle" id="defaultStyle"></select>
+            </li>
+            <li>
+                <label for="autoJoin">Auto Join</label>
+                <input wicket:id="autoJoin" id="autoJoin" type="checkbox"/>
+            </li>
+            <li>
                 <label for="enabled">
                     <wicket:message key="enabled">Enabled</wicket:message>
                 </label>
@@ -52,6 +60,7 @@
             </li>
         </ul>
     </form>
+    <div wicket:id="columns"></div>
 </wicket:extend>
 </body>
 </html>

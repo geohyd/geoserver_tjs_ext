@@ -10,8 +10,8 @@ import gmx.iderc.geoserver.tjs.data.TJSDatasource;
 import gmx.iderc.geoserver.tjs.data.jdbc.JDBC_TJSDataStoreFactory;
 import junit.framework.TestCase;
 import org.geotools.factory.CommonFactoryFinder;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 
 import javax.sql.RowSet;
 import java.sql.ResultSetMetaData;
@@ -52,7 +52,7 @@ public class Postgre_TJSDataStoreFactoryTest extends TestCase {
         ResultSetMetaData meta = ds.getResultSetMetaData();
         serialize(rst, meta);
 
-        FilterFactory2 filterFactory = CommonFactoryFinder.getFilterFactory2(null);
+        FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory(null);
         Filter filter = filterFactory.equals(filterFactory.property("field27032012_042150"), filterFactory.literal(new String("2423.00")));
 
         System.out.println("Filtered rowset");

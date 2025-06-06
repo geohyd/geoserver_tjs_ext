@@ -3,6 +3,7 @@
 <wicket:extend>
     <form wicket:id="form">
         <ul>
+            <div wicket:id="feedback"></div>
             <li>
                 <label for="name">Name</label>
                 <input wicket:id="name" id="name" type="text" size="20"/>
@@ -51,7 +52,6 @@
                 </label>
                 <input wicket:id="enabled" id="enabled" type="checkbox"/>
             </li>
-
             <li class="button-group selfclear">
                 <a href="#" wicket:id="save">
                     <wicket:message key="save">Save</wicket:message>

@@ -5,9 +5,7 @@
 
 package gmx.iderc.geoserver.tjs.catalog;
 
-/**
- * @author capote
- */
+/** @author capote */
 public interface ColumnInfo {
 
     void setName(String name);
@@ -49,5 +47,4 @@ public interface ColumnInfo {
     Class getSQLClassBinding();
 
     void setSQLClassBinding(Class sqlClassBinding);
-
 }

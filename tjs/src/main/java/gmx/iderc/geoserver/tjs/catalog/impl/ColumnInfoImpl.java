@@ -6,12 +6,9 @@
 package gmx.iderc.geoserver.tjs.catalog.impl;
 
 import gmx.iderc.geoserver.tjs.catalog.ColumnInfo;
-
 import java.io.Serializable;
 
-/**
- * @author capote
- */
+/** @author capote */
 public class ColumnInfoImpl implements ColumnInfo, Serializable {
 
     String name;
@@ -23,11 +20,10 @@ public class ColumnInfoImpl implements ColumnInfo, Serializable {
     String documentation;
     String valueUOM;
     Class sqlClassBinding;
-    //esto de debe estar también, Alvaro Javier
-    String purpose = "Attribute"; //valor por defecto
+    // esto de debe estar también, Alvaro Javier
+    String purpose = "Attribute"; // valor por defecto
 
     public void setName(String name) {
-        System.out.println("ColumnInfoImpl: setName " + name);
         this.name = name;
     }
 

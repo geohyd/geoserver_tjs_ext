@@ -14,6 +14,10 @@
         <constructor-arg ref="geoServer"/>
     </bean>
 
+    <bean id="tjsLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
+      <constructor-arg value="tjs"/>
+    </bean>
+
     <bean id="tjsService" class="org.springframework.aop.framework.ProxyFactoryBean">
         <property name="proxyInterfaces">
             <value>gmx.iderc.geoserver.tjs.TableJoiningService</value>
@@ -69,33 +73,83 @@
         </property>
     </bean>
 
+    <!-- XML Readers -->
+    <bean id="tjsGetCapabilitiesXmlReader-1.0.0"
+        class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsGetCapabilities">
+        <constructor-arg index="0" value="GetCapabilities" />
+        <constructor-arg index="1" value="1.0.0" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
+    </bean>
+    <bean id="tjsDescribeFrameworks-1.0.0"
+        class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsDescribeFrameworksXmlReader">
+        <constructor-arg index="0" value="DescribeFrameworks" />
+        <constructor-arg index="1" value="1.0.0" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
+    </bean>
+    <bean id="tjsDescribeDatasetsXmlReader-1.0.0"
+        class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsDescribeDatasetsXmlReader">
+        <constructor-arg index="0" value="DescribeDatasets" />
+        <constructor-arg index="1" value="1.0.0" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
+    </bean>
+    <bean id="tjsDescribeDataXmlReader-1.0.0"
+        class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsDescribeDataXmlReader">
+        <constructor-arg index="0" value="DescribeData" />
+        <constructor-arg index="1" value="1.0.0" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
+    </bean>
+    <bean id="tjsGetDataXmlReader-1.0.0"
+        class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsGetDataXmlReader">
+        <constructor-arg index="0" value="GetData" />
+        <constructor-arg index="1" value="1.0.0" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
+    </bean>
+
+    <!-- NOT OK-->
+    <bean id="tjsDescribeJoinAbilitiesXmlReader-1.0.0"
+        class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsDescribeJoinAbilitiesXmlReader">
+        <constructor-arg index="0" value="DescribeJoinAbilities" />
+        <constructor-arg index="1" value="1.0.0" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
+    </bean>
+
+    <bean id="tjsDescribeKeyXmlReader-1.0.0"
+        class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsDescribeKeyXmlReader">
+        <constructor-arg index="0" value="DescribeKey" />
+        <constructor-arg index="1" value="1.0.0" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
+    </bean>
+
+    <bean id="tjsJoinDataXmlReader-1.0.0"
+        class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsJoinDataXmlReader">
+        <constructor-arg index="0" value="JoinData" />
+        <constructor-arg index="1" value="1.0.0" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
+    </bean>
+
     <bean id="tjsGetCapabilitiesKvpReader" class="gmx.iderc.geoserver.tjs.kvp.GetCapabilitiesKvpRequestReader"/>
-    <bean id="tjsGetCapabilitiesResponse" class="gmx.iderc.geoserver.tjs.response.tjsGetCapabilitiesResponse"
-          singleton="false"/>
+    <bean id="tjsGetCapabilitiesResponse" class="gmx.iderc.geoserver.tjs.response.tjsGetCapabilitiesResponse"/>
 
     <bean id="tjsDescribeFrameworksKvpReader" class="gmx.iderc.geoserver.tjs.kvp.DescribeFrameworksKvpRequestReader"/>
-    <bean id="DescribeFrameworksResponse" class="gmx.iderc.geoserver.tjs.response.DescribeFrameworksResponse"
-          singleton="false"/>
+    <bean id="DescribeFrameworksResponse" class="gmx.iderc.geoserver.tjs.response.DescribeFrameworksResponse"/>
 
     <bean id="tjsDescribeKeyKvpReader" class="gmx.iderc.geoserver.tjs.kvp.DescribeKeyKvpRequestReader"/>
-    <bean id="DescribeKeyResponse" class="gmx.iderc.geoserver.tjs.response.DescribeKeyResponse" singleton="false"/>
+    <bean id="DescribeKeyResponse" class="gmx.iderc.geoserver.tjs.response.DescribeKeyResponse"/>
 
     <bean id="tjsDescribeDatasetsKvpReader" class="gmx.iderc.geoserver.tjs.kvp.DescribeDatasetsKvpRequestReader"/>
-    <bean id="DescribeDatasetsResponse" class="gmx.iderc.geoserver.tjs.response.DescribeDatasetsResponse"
-          singleton="false"/>
+    <bean id="DescribeDatasetsResponse" class="gmx.iderc.geoserver.tjs.response.DescribeDatasetsResponse"/>
 
     <bean id="tjsDescribeDataKvpReader" class="gmx.iderc.geoserver.tjs.kvp.DescribeDataKvpRequestReader"/>
-    <bean id="DescribeDataResponse" class="gmx.iderc.geoserver.tjs.response.DescribeDataResponse" singleton="false"/>
+    <bean id="DescribeDataResponse" class="gmx.iderc.geoserver.tjs.response.DescribeDataResponse"/>
 
     <bean id="tjsGetDataKvpReader" class="gmx.iderc.geoserver.tjs.kvp.GetDataKvpRequestReader"/>
-    <bean id="GetDataResponse" class="gmx.iderc.geoserver.tjs.response.GetDataResponse" singleton="false"/>
+    <bean id="GetDataResponse" class="gmx.iderc.geoserver.tjs.response.GetDataResponse"/>
 
     <bean id="tjsDescribeJoinAbilitiesKvpReader"
           class="gmx.iderc.geoserver.tjs.kvp.DescribeJoinAbilitiesKvpRequestReader"/>
-    <bean id="DescribeJoinAbilitiesResponse" class="gmx.iderc.geoserver.tjs.response.DescribeJoinAbilitiesResponse"
-          singleton="false"/>
+    <bean id="DescribeJoinAbilitiesResponse" class="gmx.iderc.geoserver.tjs.response.DescribeJoinAbilitiesResponse"/>
 
     <bean id="tjsJoinDataKvpReader" class="gmx.iderc.geoserver.tjs.kvp.JoinDataKvpRequestReader"/>
-    <bean id="JoinDataResponse" class="gmx.iderc.geoserver.tjs.response.JoinDataResponse" singleton="false"/>
+    <bean id="JoinDataResponse" class="gmx.iderc.geoserver.tjs.response.JoinDataResponse"/>
 
 </beans>

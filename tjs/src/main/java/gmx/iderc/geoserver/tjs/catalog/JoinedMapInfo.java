@@ -1,14 +1,9 @@
 package gmx.iderc.geoserver.tjs.catalog;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Alvaro Javier
- * Date: 3/27/13
- * Time: 12:16 a.m.
- */
+/** Created with IntelliJ IDEA. User: Alvaro Javier Date: 3/27/13 Time: 12:16 a.m. */
 public interface JoinedMapInfo extends TJSCatalogObject {
 
-    //3 días de vida, en milisegundos
+    // 3 días de vida, en milisegundos
     public static final long DEFAULT_LIFE_TIME = 3 * 24 * 60 * 60 * 1000;
 
     String getGetDataURL();
@@ -38,5 +33,4 @@ public interface JoinedMapInfo extends TJSCatalogObject {
     public void setDatasetUri(String uri);
 
     public String getDatasetUri();
-
 }

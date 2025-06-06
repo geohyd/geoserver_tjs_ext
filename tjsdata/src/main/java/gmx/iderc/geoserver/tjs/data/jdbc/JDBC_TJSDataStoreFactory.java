@@ -8,8 +8,11 @@ package gmx.iderc.geoserver.tjs.data.jdbc;
 
 import gmx.iderc.geoserver.tjs.data.AbstractTJSDataStoreFactory;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.geotools.data.DataAccessFactory.Param;
-import org.geotools.data.Parameter;
+//Maybe you need to use dbcp2 for set schema correctly ?
+//import org.apache.commons.dbcp2.BasicDataSource;
+
+import org.geotools.api.data.DataAccessFactory.Param;
+import org.geotools.api.data.Parameter;
 import org.geotools.util.SimpleInternationalString;
 
 import javax.sql.DataSource;

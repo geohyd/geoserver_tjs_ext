@@ -7,14 +7,11 @@ package gmx.iderc.geoserver.tjs.web.columns;
 
 import gmx.iderc.geoserver.tjs.catalog.ColumnInfo;
 import gmx.iderc.geoserver.tjs.catalog.DatasetInfo;
-import org.geoserver.web.wicket.GeoServerDataProvider;
-
 import java.util.Arrays;
 import java.util.List;
+import org.geoserver.web.wicket.GeoServerDataProvider;
 
-/**
- * @author root
- */
+/** @author root */
 public class ColumnsProvider extends GeoServerDataProvider<ColumnInfo> {
 
     DatasetInfo datasetInfo;
@@ -39,5 +36,4 @@ public class ColumnsProvider extends GeoServerDataProvider<ColumnInfo> {
     protected List<ColumnInfo> getItems() {
         return datasetInfo.getColumns();
     }
-
 }

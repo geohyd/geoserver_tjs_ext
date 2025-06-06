@@ -5,13 +5,15 @@
 
 package gmx.iderc.geoserver.tjs.data.jdbc;
 
-import com.sun.rowset.CachedRowSetImpl;
 import gmx.iderc.geoserver.tjs.data.TJSDatasource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 import javax.sql.RowSet;
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -67,7 +69,9 @@ public class JDBC_TJSDatasource implements TJSDatasource {
 
     public RowSet getRowSet() throws SQLException {
         try {
-            CachedRowSetImpl cachedRowSet = new CachedRowSetImpl();
+            RowSetFactory factory = RowSetProvider.newFactory();
+            CachedRowSet cachedRowSet = factory.createCachedRowSet();
+            // CachedRowSetImpl cachedRowSet = new CachedRowSetImpl();
             cachedRowSet.setCommand(getSQL());
             cachedRowSet.execute(getConnection());
             // Thijs Brentjens: close the connection to avoid blocking other Joins (because maxconnections was reached)
@@ -125,8 +129,10 @@ public class JDBC_TJSDatasource implements TJSDatasource {
 
     private String getSQL() throws IOException {
         String dsName="";
+        String schemaName="";
         try {
            dsName = (String) JDBC_TJSDataStoreFactory.DATASOURCENAME.lookUp(params);
+           schemaName = (String) JDBC_TJSDataStoreFactory.SCHEMA.lookUp(params);
         }  catch (Exception e) {
             LOGGER.severe(e.getMessage());
         }

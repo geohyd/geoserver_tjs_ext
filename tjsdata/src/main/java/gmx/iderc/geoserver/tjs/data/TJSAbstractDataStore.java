@@ -7,7 +7,7 @@ package gmx.iderc.geoserver.tjs.data;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.geotools.data.DefaultServiceInfo;
-import org.geotools.data.ServiceInfo;
+import org.geotools.api.data.ServiceInfo;
 import org.geotools.util.logging.Logging;
 
 import java.util.HashMap;

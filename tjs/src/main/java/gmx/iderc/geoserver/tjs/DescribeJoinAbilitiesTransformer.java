@@ -6,11 +6,14 @@ package gmx.iderc.geoserver.tjs;
 
 import gmx.iderc.geoserver.tjs.catalog.FrameworkInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
+import java.util.*;
+import java.util.logging.Logger;
 import net.opengis.tjs10.RequestBaseType;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.FunctionFactory;
 import org.geotools.filter.v1_0.OGC;
@@ -20,16 +23,12 @@ import org.geotools.tjs.TJS;
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
-import org.opengis.filter.capability.FunctionName;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
-import java.util.*;
-import java.util.logging.Logger;
-
 /**
- * Based on the <code>org.geotools.xml.transform</code> framework, does the job
- * of encoding a WFS 1.0 Capabilities document.
+ * Based on the <code>org.geotools.xml.transform</code> framework, does the job of encoding a WFS
+ * 1.0 Capabilities document.
  *
  * @author Gabriel Roldan, Axios Engineering
  * @author Chris Holmes
@@ -38,42 +37,32 @@ import java.util.logging.Logger;
  */
 public abstract class DescribeJoinAbilitiesTransformer extends TransformerBase {
 
-    /**
-     * logger
-     */
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(DescribeJoinAbilitiesTransformer.class.getPackage().getName());
-    /**
-     * identifer of a http get + post request
-     */
+    /** logger */
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(
+                    DescribeJoinAbilitiesTransformer.class.getPackage().getName());
+    /** identifer of a http get + post request */
     private static final String HTTP_GET = "Get";
+
     private static final String HTTP_POST = "Post";
-    /**
-     * wfs namespace
-     */
+    /** wfs namespace */
     protected static final String TJS_PREFIX = "tjs";
+
     protected static final String TJS_URI = "http://www.opengis.net/tjs";
-    /**
-     * xml schema namespace + prefix
-     */
+    /** xml schema namespace + prefix */
     protected static final String XSI_PREFIX = "xsi";
+
     protected static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
-    /**
-     * filter namesapce + prefix
-     */
+    /** filter namesapce + prefix */
     protected static final String OGC_PREFIX = "ogc";
+
     protected static final String OGC_URI = OGC.NAMESPACE;
-    /**
-     * wfs service
-     */
+    /** wfs service */
     protected TJSInfo tjs;
-    /**
-     * catalog
-     */
+    /** catalog */
     protected TJSCatalog catalog;
 
-    /**
-     * Creates a new CapabilitiesTransformer object.
-     */
+    /** Creates a new CapabilitiesTransformer object. */
     public DescribeJoinAbilitiesTransformer(TJSInfo tjs, TJSCatalog catalog) {
         super();
         setNamespaceDeclarationEnabled(false);
@@ -83,16 +72,18 @@ public abstract class DescribeJoinAbilitiesTransformer extends TransformerBase {
     }
 
     Set<FunctionName> getAvailableFunctionNames() {
-        //Sort them up for easier visual inspection
-        SortedSet sortedFunctions = new TreeSet(new Comparator() {
+        // Sort them up for easier visual inspection
+        SortedSet sortedFunctions =
+                new TreeSet(
+                        new Comparator() {
 
-            public int compare(Object o1, Object o2) {
-                String n1 = ((FunctionName) o1).getName();
-                String n2 = ((FunctionName) o2).getName();
+                            public int compare(Object o1, Object o2) {
+                                String n1 = ((FunctionName) o1).getName();
+                                String n2 = ((FunctionName) o2).getName();
 
-                return n1.toLowerCase().compareTo(n2.toLowerCase());
-            }
-        });
+                                return n1.toLowerCase().compareTo(n2.toLowerCase());
+                            }
+                        });
 
         Set<FunctionFactory> factories = CommonFactoryFinder.getFunctionFactories(null);
         for (FunctionFactory factory : factories) {
@@ -119,16 +110,16 @@ public abstract class DescribeJoinAbilitiesTransformer extends TransformerBase {
 
         class DescribeJoinAbilitiesTranslator extends TranslatorSupport {
 
-            //            private static final String GML_3_1_1_FORMAT = "text/xml; subtype=gml/3.1.1";
+            // private static final String GML_3_1_1_FORMAT = "text/xml; subtype=gml/3.1.1";
             RequestBaseType request;
 
             protected String getBaseURL() {
                 try {
                     Request owsRequest = ((ThreadLocal<Request>) Dispatcher.REQUEST).get();
-                    if (owsRequest != null){
+                    if (owsRequest != null) {
                         return owsRequest.getHttpRequest().getRequestURL().toString();
-                    }else{
-                        //ocurre cuando se realizan los test
+                    } else {
+                        // ocurre cuando se realizan los test
                         return "http://localhost:8080/geoserver/";
                     }
                 } catch (Exception ex) {
@@ -156,25 +147,39 @@ public abstract class DescribeJoinAbilitiesTransformer extends TransformerBase {
             public void encode(Object object) throws IllegalArgumentException {
                 request = (RequestBaseType) object;
 
-                AttributesImpl attributes = attributes(new String[]{
-                                                                           "version", "1.0",
-                                                                           "lang", "es",
-                                                                           "service", "TJS",
-                                                                           "capabilities", "http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities",
-                                                                           "xmlns:xsi", XSI_URI,
-                                                                           "xmlns", TJS.NAMESPACE,
-                                                                           "xmlns:ows", OWS.NAMESPACE, //"xmlns:gml", GML.NAMESPACE,
-                                                                           "xmlns:ogc", OGC.NAMESPACE, "xmlns:xlink", XLINK.NAMESPACE,
-                                                                           "xsi:schemaLocation", TJS.NAMESPACE + " "
-                                                                                                         + "http://schemas.opengis.net/tjs/1.0/tjsDescribeDatasets_response.xsd"
-                });
+                AttributesImpl attributes =
+                        attributes(
+                                new String[] {
+                                    "version",
+                                    "1.0",
+                                    "lang",
+                                    "es",
+                                    "service",
+                                    "TJS",
+                                    "capabilities",
+                                    "http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities",
+                                    "xmlns:xsi",
+                                    XSI_URI,
+                                    "xmlns",
+                                    TJS.NAMESPACE,
+                                    "xmlns:ows",
+                                    OWS.NAMESPACE, // "xmlns:gml", GML.NAMESPACE,
+                                    "xmlns:ogc",
+                                    OGC.NAMESPACE,
+                                    "xmlns:xlink",
+                                    XLINK.NAMESPACE,
+                                    "xsi:schemaLocation",
+                                    TJS.NAMESPACE
+                                            + " "
+                                            + "http://schemas.opengis.net/tjs/1.0/tjsDescribeDatasets_response.xsd"
+                                });
 
                 List<NamespaceInfo> namespaces = catalog.getNamespaces();
                 for (NamespaceInfo namespace : namespaces) {
                     String prefix = namespace.getPrefix();
                     String uri = namespace.getURI();
 
-                    //ignore xml prefix
+                    // ignore xml prefix
                     if ("xml".equals(prefix)) {
                         continue;
                     }
@@ -186,7 +191,6 @@ public abstract class DescribeJoinAbilitiesTransformer extends TransformerBase {
 
                 start(TJS.JoinAbilities.getLocalPart(), attributes);
                 start(TJS.SpatialFrameworks.getLocalPart(), attributes);
-
 
                 for (FrameworkInfo framework : catalog.getFrameworks()) {
                     handleFramework(framework);
@@ -216,7 +220,9 @@ public abstract class DescribeJoinAbilitiesTransformer extends TransformerBase {
                 start(TJS.Mechanism.getLocalPart());
                 element(TJS.Identifier.getLocalPart(), "WMS");
                 element(TJS.Title.getLocalPart(), "WMS Server v1.1.1");
-                element(TJS.Abstract.getLocalPart(), "The OpenGIS® Web Map Service Interface Standard (WMS) provides a simple HTTP interface for requesting geo-registered map images from one or more distributed geospatial databases. A WMS request defines the geographic layer(s) and area of interest to be processed. The response to the request is one or more geo-registered map images (returned as JPEG, PNG, etc) that can be displayed in a browser application. The interface also supports the ability to specify whether the returned images should be transparent so that layers from multiple servers can be combined or no");
+                element(
+                        TJS.Abstract.getLocalPart(),
+                        "The OpenGIS® Web Map Service Interface Standard (WMS) provides a simple HTTP interface for requesting geo-registered map images from one or more distributed geospatial databases. A WMS request defines the geographic layer(s) and area of interest to be processed. The response to the request is one or more geo-registered map images (returned as JPEG, PNG, etc) that can be displayed in a browser application. The interface also supports the ability to specify whether the returned images should be transparent so that layers from multiple servers can be combined or no");
                 element("Reference", "http://schemas.opengis.net/wms/1.1.1/");
                 end(TJS.Mechanism.getLocalPart());
             }
@@ -226,12 +232,16 @@ public abstract class DescribeJoinAbilitiesTransformer extends TransformerBase {
                     return;
                 }
                 start(TJS.FrameworkKey.getLocalPart());
-                //   <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0" />
-                AttributesImpl attributes = attributes(new String[]{
-                                                                           "name", frameworkKey.getName(),
-                                                                           "type", frameworkKey.getBinding().toString(),
-                                                                           "length", String.valueOf(frameworkKey.getLength()),
-                                                                           "decimals", "0"});
+                //   <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer"
+                // length="2" decimals="0" />
+                AttributesImpl attributes =
+                        attributes(
+                                new String[] {
+                                    "name", frameworkKey.getName(),
+                                    "type", frameworkKey.getBinding().toString(),
+                                    "length", String.valueOf(frameworkKey.getLength()),
+                                    "decimals", "0"
+                                });
                 element("Column", "", attributes);
                 end(TJS.FrameworkKey.getLocalPart());
             }
@@ -255,16 +265,21 @@ public abstract class DescribeJoinAbilitiesTransformer extends TransformerBase {
                 element(TJS.Title.getLocalPart(), framework.getName());
                 element(TJS.Abstract.getLocalPart(), framework.getDescription());
                 if (framework.getRefererenceDate() != null) {
-                    element(TJS.ReferenceDate.getLocalPart(), framework.getRefererenceDate().toString());
+                    element(
+                            TJS.ReferenceDate.getLocalPart(),
+                            framework.getRefererenceDate().toString());
                 }
                 element(TJS.Version.getLocalPart(), String.valueOf(framework.getVersion()));
                 element(TJS.Documentation.getLocalPart(), framework.getDocumentation());
                 handleFrameworkKey(framework.getFrameworkKey());
                 handleBoundingCoordinates(framework.getBoundingCoordinates());
-                element(TJS.DescribeDatasetsRequest.getLocalPart(), getBaseURL() + "?request=DescribeDatasets&Service=TJS&Version=1.0.0&FrameworkURI=" + framework.getUri());
+                element(
+                        TJS.DescribeDatasetsRequest.getLocalPart(),
+                        getBaseURL()
+                                + "?request=DescribeDatasets&Service=TJS&Version=1.0.0&FrameworkURI="
+                                + framework.getUri());
                 end(TJS.Framework.getLocalPart());
             }
-
         }
     }
 }

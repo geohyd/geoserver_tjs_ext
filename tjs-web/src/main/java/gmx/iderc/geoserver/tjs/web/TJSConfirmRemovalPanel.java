@@ -4,8 +4,11 @@
  */
 package gmx.iderc.geoserver.tjs.web;
 
+import static gmx.iderc.geoserver.tjs.catalog.TJSCascadeRemovalReporter.ModificationType.DELETE;
+
 import gmx.iderc.geoserver.tjs.TJSExtension;
 import gmx.iderc.geoserver.tjs.catalog.*;
+import java.util.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -14,10 +17,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.ResourceInfo;
-
-import java.util.*;
-
-import static gmx.iderc.geoserver.tjs.catalog.TJSCascadeRemovalReporter.ModificationType.DELETE;
 
 @SuppressWarnings("serial")
 public class TJSConfirmRemovalPanel extends Panel {
@@ -45,12 +44,12 @@ public class TJSConfirmRemovalPanel extends Panel {
                 root.accept(visitor);
             }
         }
-        //quitar los roots que no se pueden borrar, Alvaro Javier Fuentes Suarez
+        // quitar los roots que no se pueden borrar, Alvaro Javier Fuentes Suarez
         roots.removeAll(notRemoved.keySet());
-        //quitar los roots del resultado del visitador (para no borrar dos veces!),
-        //Alvaro Javier Fuentes Suarez
+        // quitar los roots del resultado del visitador (para no borrar dos veces!),
+        // Alvaro Javier Fuentes Suarez
         visitor.removeAll(roots);
-        //visitor.removeAll(notRemoved.keySet());
+        // visitor.removeAll(notRemoved.keySet());
 
         // add roots
         WebMarkupContainer root = new WebMarkupContainer("rootObjects");
@@ -70,8 +69,7 @@ public class TJSConfirmRemovalPanel extends Panel {
         // remove the resources, they are cascaded, but won't be show in the UI
         for (Iterator it = cascaded.iterator(); it.hasNext(); ) {
             TJSCatalogObject TJSCatalogObject = (TJSCatalogObject) it.next();
-            if (TJSCatalogObject instanceof ResourceInfo)
-                it.remove();
+            if (TJSCatalogObject instanceof ResourceInfo) it.remove();
         }
         removed.setVisible(cascaded.size() > 0);
         add(removed);
@@ -80,29 +78,25 @@ public class TJSConfirmRemovalPanel extends Panel {
         WebMarkupContainer removedFrameworks = new WebMarkupContainer("frameworksRemoved");
         removed.add(removedFrameworks);
         List<FrameworkInfo> frameworks = visitor.getObjects(FrameworkInfo.class, DELETE);
-        if (frameworks.size() == 0)
-            removedFrameworks.setVisible(false);
+        if (frameworks.size() == 0) removedFrameworks.setVisible(false);
         removedFrameworks.add(new Label("frameworks", names(frameworks)));
-        removed.add(removedFrameworks);//agregar donde es!, Alvaro Javier Fuentes Suarez
+        removed.add(removedFrameworks); // agregar donde es!, Alvaro Javier Fuentes Suarez
 
         // removed datasets
         WebMarkupContainer removedDatasets = new WebMarkupContainer("datasetsRemoved");
         removed.add(removedDatasets);
         List<DatasetInfo> datasets = visitor.getObjects(DatasetInfo.class, DELETE);
-        if (datasets.size() == 0)
-            removedDatasets.setVisible(false);
+        if (datasets.size() == 0) removedDatasets.setVisible(false);
         removedDatasets.add(new Label("datasets", names(datasets)));
-        removed.add(removedDatasets);//agregar donde es!, Alvaro Javier Fuentes Suarez
+        removed.add(removedDatasets); // agregar donde es!, Alvaro Javier Fuentes Suarez
 
         // removed datastores
         WebMarkupContainer removetDatastores = new WebMarkupContainer("datastoresRemoved");
         removed.add(removetDatastores);
         List<DataStoreInfo> datastores = visitor.getObjects(DataStoreInfo.class, DELETE);
-        if (datastores.size() == 0)
-            removetDatastores.setVisible(false);
+        if (datastores.size() == 0) removetDatastores.setVisible(false);
         removetDatastores.add(new Label("datasets", names(datastores)));
-        removed.add(removetDatastores);//agregar donde es!, Alvaro Javier Fuentes Suarez
-
+        removed.add(removetDatastores); // agregar donde es!, Alvaro Javier Fuentes Suarez
     }
 
     public List<? extends TJSCatalogObject> getRoots() {
@@ -113,8 +107,7 @@ public class TJSConfirmRemovalPanel extends Panel {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < objects.size(); i++) {
             sb.append(name(objects.get(i)));
-            if (i < (objects.size() - 1))
-                sb.append(", ");
+            if (i < (objects.size() - 1)) sb.append(", ");
         }
         return sb.toString();
     }
@@ -123,37 +116,38 @@ public class TJSConfirmRemovalPanel extends Panel {
         try {
             return (String) BeanUtils.getProperty(object, "name");
         } catch (Exception e) {
-            throw new RuntimeException("A catalog object that does not have " +
-                                               "a 'name' property has been used, this is unexpected", e);
+            throw new RuntimeException(
+                    "A catalog object that does not have "
+                            + "a 'name' property has been used, this is unexpected",
+                    e);
         }
     }
 
     ListView notRemovedList(final Map<TJSCatalogObject, StringResourceModel> notRemoved) {
         List<TJSCatalogObject> items = new ArrayList(notRemoved.keySet());
-        ListView lv = new ListView("notRemovedList", items) {
+        ListView lv =
+                new ListView("notRemovedList", items) {
 
-            @Override
-            protected void populateItem(ListItem item) {
-                TJSCatalogObject object = (TJSCatalogObject) item.getModelObject();
-                StringResourceModel reason = notRemoved.get(object);
-                item.add(new Label("name", name(object)));
-                item.add(new Label("reason", reason));
-            }
-        };
+                    @Override
+                    protected void populateItem(ListItem item) {
+                        TJSCatalogObject object = (TJSCatalogObject) item.getModelObject();
+                        StringResourceModel reason = notRemoved.get(object);
+                        item.add(new Label("name", name(object)));
+                        item.add(new Label("reason", reason));
+                    }
+                };
         return lv;
     }
 
     /**
      * Determines if a catalog object can be removed or not.
-     * <p>
-     * This method returns non-null in cases where the object should not be be
-     * removed. The return value should be a description or reason of why the
-     * object can not be removed.
-     * </p>
+     *
+     * <p>This method returns non-null in cases where the object should not be be removed. The
+     * return value should be a description or reason of why the object can not be removed.
      *
      * @param info The object to be removed.
-     * @return A message stating why the object can not be removed, or null to
-     *         indicate that it can be removed.
+     * @return A message stating why the object can not be removed, or null to indicate that it can
+     *     be removed.
      */
     protected StringResourceModel canRemove(TJSCatalogObject info) {
         return null;

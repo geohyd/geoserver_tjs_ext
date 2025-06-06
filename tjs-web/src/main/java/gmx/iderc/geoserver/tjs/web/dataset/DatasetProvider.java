@@ -7,59 +7,62 @@ package gmx.iderc.geoserver.tjs.web.dataset;
 
 import gmx.iderc.geoserver.tjs.TJSExtension;
 import gmx.iderc.geoserver.tjs.catalog.DatasetInfo;
-import org.geoserver.web.wicket.GeoServerDataProvider;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.geoserver.web.wicket.GeoServerDataProvider;
 
-/**
- * @author root
- */
+/** @author root */
 public class DatasetProvider extends GeoServerDataProvider<DatasetInfo> {
 
-    static final Property<DatasetInfo> FRAMEWORK = new AbstractProperty<DatasetInfo>("framework") {
+    static final Property<DatasetInfo> FRAMEWORK =
+            new AbstractProperty<DatasetInfo>("framework") {
 
-        public Object getPropertyValue(DatasetInfo item) {
-            if (item.getFramework() != null) {
-                return item.getFramework().getName();
-            } else {
-                return new String("");
-            }
-        }
+                public Object getPropertyValue(DatasetInfo item) {
+                    if (item.getFramework() != null) {
+                        return item.getFramework().getName();
+                    } else {
+                        return new String("");
+                    }
+                }
+            };
 
-    };
+    static final Property<DatasetInfo> DATASTORE =
+            new AbstractProperty<DatasetInfo>("dataStore") {
 
-    static final Property<DatasetInfo> DATASTORE = new AbstractProperty<DatasetInfo>("dataStore") {
-
-        public Object getPropertyValue(DatasetInfo item) {
-            if (item.getDataStore() != null) {
-                return item.getDataStore().getName();
-            } else {
-                return new String("");
-            }
-        }
-
-    };
+                public Object getPropertyValue(DatasetInfo item) {
+                    if (item.getDataStore() != null) {
+                        return item.getDataStore().getName();
+                    } else {
+                        return new String("");
+                    }
+                }
+            };
 
     public static final Property<DatasetInfo> NAME = new BeanProperty<DatasetInfo>("name", "name");
 
-    //pa que tanta informacion?, Alvaro Javier Fuentes Suarez
-    public static final Property<DatasetInfo> TITLE = new BeanProperty<DatasetInfo>("description", "description");
-    public static final Property<DatasetInfo> ORGANIZATION = new BeanProperty<DatasetInfo>("organization", "organization");
-    public static final Property<DatasetInfo> REF_DATE = new BeanProperty<DatasetInfo>("referenceDate", "referenceDate");
-    public static final Property<DatasetInfo> VERSION = new BeanProperty<DatasetInfo>("version", "version");
+    // pa que tanta informacion?, Alvaro Javier Fuentes Suarez
+    public static final Property<DatasetInfo> TITLE =
+            new BeanProperty<DatasetInfo>("description", "description");
+    public static final Property<DatasetInfo> ORGANIZATION =
+            new BeanProperty<DatasetInfo>("organization", "organization");
+    public static final Property<DatasetInfo> REF_DATE =
+            new BeanProperty<DatasetInfo>("referenceDate", "referenceDate");
+    public static final Property<DatasetInfo> VERSION =
+            new BeanProperty<DatasetInfo>("version", "version");
 
+    static final Property<DatasetInfo> ENABLED =
+            new AbstractProperty<DatasetInfo>("enabled") {
 
-    static final Property<DatasetInfo> ENABLED = new AbstractProperty<DatasetInfo>("enabled") {
-
-        public Boolean getPropertyValue(DatasetInfo item) {
-            return Boolean.valueOf(item.getEnabled());
-        }
-
-    };
-    //pa que tanta iformacion?, Alvaro Javier Fuentes Suarez
-    //final List<Property<DatasetInfo>> PROPERTIES = Arrays.asList(NAME, FRAMEWORK, TITLE, ORGANIZATION, REF_DATE, VERSION, DATASTORE, ENABLED);
-    final List<Property<DatasetInfo>> PROPERTIES = Arrays.asList(NAME, FRAMEWORK, DATASTORE, ENABLED);
+                public Boolean getPropertyValue(DatasetInfo item) {
+                    return Boolean.valueOf(item.getEnabled());
+                }
+            };
+    // pa que tanta iformacion?, Alvaro Javier Fuentes Suarez
+    // final List<Property<DatasetInfo>> PROPERTIES = Arrays.asList(NAME, FRAMEWORK, TITLE,
+    // ORGANIZATION, REF_DATE, VERSION, DATASTORE, ENABLED);
+    final List<Property<DatasetInfo>> PROPERTIES =
+            Arrays.asList(NAME, FRAMEWORK, DATASTORE, ENABLED);
 
     @Override
     protected List<Property<DatasetInfo>> getProperties() {
@@ -68,7 +71,22 @@ public class DatasetProvider extends GeoServerDataProvider<DatasetInfo> {
 
     @Override
     protected List<DatasetInfo> getItems() {
-        return TJSExtension.getTJSCatalog().getDatasets(null);
+        // TODO : Change this methode by the original code when the datasetEditPage can be works for
+        // the dataset created by a joindata requests.
+        // Original code : return TJSExtension.getTJSCatalog().getDatasets(null);
+        List<DatasetInfo> dsiList = TJSExtension.getTJSCatalog().getDatasets(null);
+        List<DatasetInfo> dsiFinalList = new ArrayList<DatasetInfo>();
+        for (DatasetInfo dsi : dsiList) {
+            if (dsi.getDataStore() != null && dsi.getDataStore().getType() != null) {
+                dsiFinalList.add(dsi);
+            }
+        }
+        return dsiFinalList;
     }
 
+    // ORIGINAL
+    // @Override
+    // protected List<DatasetInfo> getItems() {
+    //     return TJSExtension.getTJSCatalog().getDatasets(null);
+    // }
 }

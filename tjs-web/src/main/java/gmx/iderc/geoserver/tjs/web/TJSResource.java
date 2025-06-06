@@ -4,10 +4,9 @@
  */
 package gmx.iderc.geoserver.tjs.web;
 
-import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.Name;
-
 import java.io.Serializable;
+import org.geotools.api.feature.type.Name;
+import org.geotools.feature.NameImpl;
 
 /**
  * The bean to be rendered in the new layer page
@@ -16,15 +15,12 @@ import java.io.Serializable;
  */
 public class TJSResource implements Comparable<TJSResource>, Serializable {
 
-    /**
-     * The resource name
-     */
+    /** The resource name */
     String name;
+
     String uri;
 
-    /**
-     * If this resource has already been published, or not
-     */
+    /** If this resource has already been published, or not */
     boolean published;
 
     public void setPublished(boolean published) {
@@ -59,27 +55,20 @@ public class TJSResource implements Comparable<TJSResource>, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         TJSResource other = (TJSResource) obj;
         if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
+            if (other.name != null) return false;
+        } else if (!name.equals(other.name)) return false;
         return true;
     }
 
     public int compareTo(TJSResource o) {
         // unpublished resources first
-        if (published && !o.published)
-            return -1;
-        else if (!published && o.published)
-            return 1;
+        if (published && !o.published) return -1;
+        else if (!published && o.published) return 1;
         // the compare by local name, as it's unlikely the users will see the
         // namespace URI (and the prefix is not available in Name)
         return name.compareTo(o.name);
@@ -89,5 +78,4 @@ public class TJSResource implements Comparable<TJSResource>, Serializable {
     public String toString() {
         return name + "(" + published + ")";
     }
-
 }

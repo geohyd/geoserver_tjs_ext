@@ -16,9 +16,10 @@
  */
 package gmx.iderc.geoserver.tjs.data;
 
-import org.geotools.data.DataAccessFactory;
-import org.geotools.factory.FactoryCreator;
-import org.geotools.factory.FactoryRegistry;
+import org.geotools.api.data.DataAccessFactory;
+import org.geotools.util.factory.FactoryCreator;
+import org.geotools.util.factory.FactoryRegistry;
+import java.util.stream.Stream;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -125,9 +126,8 @@ public final class TJSDataAccessFinder {
                                                           + " should be used, but could not connect", couldNotConnect);
                     }
                 } else {
-                    canProcessButNotAvailable = new IOException(
-                                                                       fac.getDisplayName()
-                                                                               + " should be used, but is not availble. Have you installed the required drivers or jar files?");
+                    canProcessButNotAvailable = new IOException(fac.getDisplayName()
+                                                                    + " should be used, but is not availble. Have you installed the required drivers or jar files?");
                     LOGGER.log(Level.WARNING, fac.getDisplayName()
                                                       + " should be used, but is not availble", canProcessButNotAvailable);
                 }
@@ -147,26 +147,24 @@ public final class TJSDataAccessFinder {
      * @return An iterator over all discovered datastores which have registered
      *         factories
      */
-    public static synchronized Iterator<TJSDataAccessFactory> getAllDataStores() {
+    public static synchronized Stream<TJSDataAccessFactory> getAllDataStores() {
         Set<TJSDataAccessFactory> all = new HashSet<TJSDataAccessFactory>();
-        Iterator<TJSDataStoreFactorySpi> allDataStores = TJSDataStoreFinder.getAllDataStores();
-        Iterator<TJSDataAccessFactory> allDataAccess = getAllDataStores(getServiceRegistry(),
+        Stream<TJSDataStoreFactorySpi> allDataStores = TJSDataStoreFinder.getAllDataStores();
+        Stream<TJSDataAccessFactory> allDataAccess = getAllDataStores(getServiceRegistry(),
                                                                                TJSDataAccessFactory.class);
-        while (allDataStores.hasNext()) {
-            TJSDataStoreFactorySpi next = allDataStores.next();
-            all.add(next);
-        }
+        allDataStores.forEach(item->{
+            all.add(item);
+        });
 
-        while (allDataAccess.hasNext()) {
-            all.add(allDataAccess.next());
-        }
-
-        return all.iterator();
+        allDataAccess.forEach(item->{
+            all.add(item);
+        });
+        return all.stream();
     }
 
-    static synchronized <T extends TJSDataAccessFactory> Iterator<T> getAllDataStores(
-                                                                                             FactoryRegistry registry, Class<T> category) {
-        return registry.getServiceProviders(category, null, null);
+    static synchronized <T extends TJSDataAccessFactory> Stream<T> getAllDataStores(FactoryRegistry registry, Class<T> category) {
+        //return registry.getServiceProviders(category, null, null);
+        return registry.getFactories(category, false);
     }
 
     /**
@@ -178,11 +176,9 @@ public final class TJSDataAccessFinder {
      *         factories, and whose available method returns true.
      */
     public static synchronized Iterator<TJSDataAccessFactory> getAvailableDataStores() {
-
         FactoryRegistry serviceRegistry = getServiceRegistry();
         Set<TJSDataAccessFactory> availableDS = getAvailableDataStores(serviceRegistry,
                                                                               TJSDataAccessFactory.class);
-
         Iterator<TJSDataStoreFactorySpi> availableDataStores = TJSDataStoreFinder
                                                                        .getAvailableDataStores();
         while (availableDataStores.hasNext()) {
@@ -192,19 +188,14 @@ public final class TJSDataAccessFinder {
         return availableDS.iterator();
     }
 
-    static synchronized <T extends TJSDataAccessFactory> Set<T> getAvailableDataStores(
-                                                                                              FactoryRegistry registry, Class<T> targetClass) {
-        Set<T> availableDS = new HashSet<T>(5);
-        Iterator<T> it = registry.getServiceProviders(targetClass, null, null);
-        T dsFactory;
-        while (it.hasNext()) {
-            dsFactory = it.next();
-
-            if (dsFactory.isAvailable()) {
-                availableDS.add(dsFactory);
+    static synchronized <T extends TJSDataAccessFactory> Set<T> getAvailableDataStores(FactoryRegistry registry, Class<T> targetClass) {
+        Set<T> availableDS = new HashSet<T>(5); //Why (5) ?
+        Stream<T> it = registry.getFactories(targetClass, null, null);
+        it.forEach(item->{
+            if (item.isAvailable()) {
+                availableDS.add(item);
             }
-        }
-
+        });
         return availableDS;
     }
 

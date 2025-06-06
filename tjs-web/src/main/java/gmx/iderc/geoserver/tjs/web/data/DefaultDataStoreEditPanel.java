@@ -8,8 +8,15 @@ import gmx.iderc.geoserver.tjs.TJSExtension;
 import gmx.iderc.geoserver.tjs.catalog.DataStoreInfo;
 import gmx.iderc.geoserver.tjs.catalog.TJSCatalog;
 import gmx.iderc.geoserver.tjs.data.TJSDataAccessFactory;
+import java.io.File;
+import java.io.Serializable;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -24,15 +31,7 @@ import org.geoserver.web.data.store.panel.PasswordParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
-import org.geotools.data.DataAccessFactory.Param;
-
-import java.io.File;
-import java.io.Serializable;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import org.geotools.api.data.DataAccessFactory.Param;
 
 @SuppressWarnings("serial")
 public class DefaultDataStoreEditPanel extends Panel {
@@ -57,7 +56,7 @@ public class DefaultDataStoreEditPanel extends Panel {
         }
 
         final TJSCatalog catalog = getTJSCatalog();
-//        final ResourcePool resourcePool = catalog.getResourcePool();
+        // final ResourcePool resourcePool = catalog.getResourcePool();
         TJSDataAccessFactory dsFactory;
         try {
             dsFactory = catalog.getDataStoreFactory(info.getType());
@@ -83,29 +82,32 @@ public class DefaultDataStoreEditPanel extends Panel {
         final List<String> keys = new ArrayList<String>(paramsMetadata.keySet());
         final IModel paramsModel = new PropertyModel(model, "connectionParameters");
 
-        ListView paramsList = new ListView("parameters", keys) {
-            private static final long serialVersionUID = 1L;
+        ListView paramsList =
+                new ListView("parameters", keys) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void populateItem(ListItem item) {
-                String paramName = item.getDefaultModelObjectAsString();
-                ParamInfo paramMetadata = paramsMetadata.get(paramName);
+                    @Override
+                    protected void populateItem(ListItem item) {
+                        String paramName = item.getDefaultModelObjectAsString();
+                        ParamInfo paramMetadata = paramsMetadata.get(paramName);
 
-                Component inputComponent;
-                inputComponent = getInputComponent("parameterPanel", paramsModel, paramMetadata);
+                        Component inputComponent;
+                        inputComponent =
+                                getInputComponent("parameterPanel", paramsModel, paramMetadata);
 
-                String description = paramMetadata.getTitle();
-                if (description != null) {
-                    inputComponent.add(new SimpleAttributeModifier("title", description));
-                }
-                item.add(inputComponent);
-            }
-        };
+                        String description = paramMetadata.getTitle();
+                        if (description != null) {
+                            // inputComponent.add(new SimpleAttributeModifier("title",
+                            // description));
+                            inputComponent.add(new AttributeModifier("title", description));
+                        }
+                        item.add(inputComponent);
+                    }
+                };
         // needed for form components not to loose state
         paramsList.setReuseItems(true);
 
         add(paramsList);
-
     }
 
     /**
@@ -115,8 +117,8 @@ public class DefaultDataStoreEditPanel extends Panel {
      * @param paramMetadata
      * @return
      */
-    private Panel getInputComponent(final String componentId, final IModel paramsModel,
-                                    final ParamInfo paramMetadata) {
+    private Panel getInputComponent(
+            final String componentId, final IModel paramsModel, final ParamInfo paramMetadata) {
 
         final String paramName = paramMetadata.getName();
         final String paramLabel = paramMetadata.getName();
@@ -128,25 +130,37 @@ public class DefaultDataStoreEditPanel extends Panel {
         if ("dbtype".equals(paramName) || "filetype".equals(paramName)) {
             // skip the two well known discriminators
             IModel model = new MapModel(paramsModel, paramName);
-            TextParamPanel tp = new TextParamPanel(componentId,
-                                                          model, new ResourceModel(paramLabel, paramLabel), required);
+            TextParamPanel tp =
+                    new TextParamPanel(
+                            componentId,
+                            model,
+                            new ResourceModel(paramLabel, paramLabel),
+                            required);
             tp.setVisible(false);
             parameterPanel = tp;
         } else if (options != null && options.size() > 0) {
 
             IModel<Serializable> valueModel = new MapModel(paramsModel, paramName);
             IModel<String> labelModel = new ResourceModel(paramLabel, paramLabel);
-            parameterPanel = new DropDownChoiceParamPanel(componentId, valueModel, labelModel, options,
-                                                                 required);
+            parameterPanel =
+                    new DropDownChoiceParamPanel(
+                            componentId, valueModel, labelModel, options, required);
 
         } else if (Boolean.class == binding) {
             // TODO Add prefix for better i18n?
-            parameterPanel = new CheckBoxParamPanel(componentId, new MapModel(paramsModel,
-                                                                                     paramName), new ResourceModel(paramLabel, paramLabel));
+            parameterPanel =
+                    new CheckBoxParamPanel(
+                            componentId,
+                            new MapModel(paramsModel, paramName),
+                            new ResourceModel(paramLabel, paramLabel));
 
         } else if (String.class == binding && paramMetadata.isPassword()) {
-            parameterPanel = new PasswordParamPanel(componentId, new MapModel(paramsModel,
-                                                                                     paramName), new ResourceModel(paramLabel, paramLabel), required);
+            parameterPanel =
+                    new PasswordParamPanel(
+                            componentId,
+                            new MapModel(paramsModel, paramName),
+                            new ResourceModel(paramLabel, paramLabel),
+                            required);
         } else {
             IModel model;
             if ("url".equalsIgnoreCase(paramName)) {
@@ -155,8 +169,12 @@ public class DefaultDataStoreEditPanel extends Panel {
                 model = new MapModel(paramsModel, paramName);
             }
 
-            TextParamPanel tp = new TextParamPanel(componentId,
-                                                          model, new ResourceModel(paramLabel, paramLabel), required);
+            TextParamPanel tp =
+                    new TextParamPanel(
+                            componentId,
+                            model,
+                            new ResourceModel(paramLabel, paramLabel),
+                            required);
             // if it can be a reference to the local filesystem make sure it's valid
             if (paramName.equalsIgnoreCase("url")) {
                 tp.getFormComponent().add(new FileExistsValidator());
@@ -166,8 +184,10 @@ public class DefaultDataStoreEditPanel extends Panel {
             // GR: it doesn't work for File neither.
             // AA: better not mess with files, the converters turn data dir relative to
             // absolute and bye bye data dir portability
-            if (binding != null && !String.class.equals(binding) && !File.class.equals(binding)
-                        && !URL.class.equals(binding)) {
+            if (binding != null
+                    && !String.class.equals(binding)
+                    && !File.class.equals(binding)
+                    && !URL.class.equals(binding)) {
                 tp.getFormComponent().setType(binding);
             }
             parameterPanel = tp;
@@ -176,8 +196,8 @@ public class DefaultDataStoreEditPanel extends Panel {
     }
 
     /**
-     * Makes sure the file path for shapefiles do start with file:// otherwise
-     * stuff like /home/user/file.shp won't be recognized as valid...
+     * Makes sure the file path for shapefiles do start with file:// otherwise stuff like
+     * /home/user/file.shp won't be recognized as valid...
      *
      * @author aaime
      */
@@ -189,9 +209,9 @@ public class DefaultDataStoreEditPanel extends Panel {
         @Override
         public void setObject(Object object) {
             String file = (String) object;
-            if (!file.startsWith("file://") && !file.startsWith("file:") &&
-                        !file.startsWith("http://"))
-                file = "file://" + file;
+            if (!file.startsWith("file://")
+                    && !file.startsWith("file:")
+                    && !file.startsWith("http://")) file = "file://" + file;
             super.setObject(file);
         }
     }
@@ -230,6 +250,4 @@ public class DefaultDataStoreEditPanel extends Panel {
 
         info.getConnectionParameters().put(paramInfo.getName(), defValue);
     }
-
-
 }
