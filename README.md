@@ -1,3 +1,9 @@
+This is a fork of the `geoserver tjs community extension` based on the excellent work of https://github.com/thijsbrentjens/geoserver/tree/tjs_2.2.x/  
+
+Show the release page to find the updated extension versions made by Antea(r)Group for DREAL Corse.
+
+Original README from thijsbrentjens :  
+
 Table Joining Services extension
 =====================
 This is an upgrade of the community plugin TJS for Geoserver 2.18 on request of DREAL Corse. Code is based on code of Thijs Brentjens.
