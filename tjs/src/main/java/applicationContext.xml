@@ -78,31 +78,31 @@
         class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsGetCapabilities">
         <constructor-arg index="0" value="GetCapabilities" />
         <constructor-arg index="1" value="1.0.0" />
-        <constructor-arg index="3" ref="entityResolverProvider" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
     </bean>
     <bean id="tjsDescribeFrameworks-1.0.0"
         class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsDescribeFrameworksXmlReader">
         <constructor-arg index="0" value="DescribeFrameworks" />
         <constructor-arg index="1" value="1.0.0" />
-        <constructor-arg index="3" ref="entityResolverProvider" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
     </bean>
     <bean id="tjsDescribeDatasetsXmlReader-1.0.0"
         class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsDescribeDatasetsXmlReader">
         <constructor-arg index="0" value="DescribeDatasets" />
         <constructor-arg index="1" value="1.0.0" />
-        <constructor-arg index="3" ref="entityResolverProvider" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
     </bean>
     <bean id="tjsDescribeDataXmlReader-1.0.0"
         class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsDescribeDataXmlReader">
         <constructor-arg index="0" value="DescribeData" />
         <constructor-arg index="1" value="1.0.0" />
-        <constructor-arg index="3" ref="entityResolverProvider" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
     </bean>
     <bean id="tjsGetDataXmlReader-1.0.0"
         class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsGetDataXmlReader">
         <constructor-arg index="0" value="GetData" />
         <constructor-arg index="1" value="1.0.0" />
-        <constructor-arg index="3" ref="entityResolverProvider" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
     </bean>
 
     <!-- NOT OK-->
@@ -110,21 +110,21 @@
         class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsDescribeJoinAbilitiesXmlReader">
         <constructor-arg index="0" value="DescribeJoinAbilities" />
         <constructor-arg index="1" value="1.0.0" />
-        <constructor-arg index="3" ref="entityResolverProvider" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
     </bean>
 
     <bean id="tjsDescribeKeyXmlReader-1.0.0"
         class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsDescribeKeyXmlReader">
         <constructor-arg index="0" value="DescribeKey" />
         <constructor-arg index="1" value="1.0.0" />
-        <constructor-arg index="3" ref="entityResolverProvider" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
     </bean>
 
     <bean id="tjsJoinDataXmlReader-1.0.0"
         class="gmx.iderc.geoserver.tjs.xml.v1_0_0.TjsJoinDataXmlReader">
         <constructor-arg index="0" value="JoinData" />
         <constructor-arg index="1" value="1.0.0" />
-        <constructor-arg index="3" ref="entityResolverProvider" />
+        <constructor-arg index="2" ref="entityResolverProvider" />
     </bean>
 
     <bean id="tjsGetCapabilitiesKvpReader" class="gmx.iderc.geoserver.tjs.kvp.GetCapabilitiesKvpRequestReader"/>

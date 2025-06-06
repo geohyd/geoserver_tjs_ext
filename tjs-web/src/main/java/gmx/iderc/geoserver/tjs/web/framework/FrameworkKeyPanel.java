@@ -107,7 +107,8 @@ public class FrameworkKeyPanel extends Panel {
         add(featureTypeChoice);
 
         final IModel keyLabelModel = new ResourceModel("frameworkKey", "Framework Key");
-        Label keyColumnlabel = new Label("frameworkKeyLabel", keyLabelModel);
+        Label keyColumnlabel =
+                new Label("frameworkKeyLabel", keyLabelModel.getObject() + requiredMark);
         add(keyColumnlabel);
 
         IModel attributesModel = new FeatureTypePropertiesModel(featureTypeModel);
@@ -119,14 +120,15 @@ public class FrameworkKeyPanel extends Panel {
                         frameworkKeyModel,
                         attributesModel,
                         new ChoiceRenderer());
-        keyPropertyChoice.setRequired(required);
+        keyPropertyChoice.setRequired(true);
         keyPropertyChoice.setOutputMarkupId(true);
         // feedback.add(keyPropertyChoice);
         add(keyPropertyChoice);
 
         final IModel keyTitleLabelModel =
                 new ResourceModel("frameworkKeyTitle", "Framework Key Title");
-        Label keyTitleColumnlabel = new Label("frameworkKeyTitleLabel", keyTitleLabelModel);
+        Label keyTitleColumnlabel =
+                new Label("frameworkKeyTitleLabel", keyTitleLabelModel.getObject() + requiredMark);
         add(keyTitleColumnlabel);
 
         keyTitlePropertyChoice =
@@ -135,7 +137,7 @@ public class FrameworkKeyPanel extends Panel {
                         frameworkKeyTitleModel,
                         attributesModel,
                         new ChoiceRenderer());
-        keyTitlePropertyChoice.setRequired(false);
+        keyTitlePropertyChoice.setRequired(true);
         keyTitlePropertyChoice.setOutputMarkupId(true);
         // feedback.add(keyTitlePropertyChoice);
         add(keyTitlePropertyChoice);

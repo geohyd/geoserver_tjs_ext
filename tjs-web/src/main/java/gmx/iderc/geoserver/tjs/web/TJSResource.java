@@ -5,8 +5,8 @@
 package gmx.iderc.geoserver.tjs.web;
 
 import java.io.Serializable;
+import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.Name;
 
 /**
  * The bean to be rendered in the new layer page

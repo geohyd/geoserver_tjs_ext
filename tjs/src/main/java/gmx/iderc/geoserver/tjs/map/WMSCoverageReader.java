@@ -11,13 +11,20 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.geometry.Bounds;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.referencing.ReferenceIdentifier;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.GeographicCRS;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wms.Layer;
@@ -30,13 +37,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.util.Version;
-import org.opengis.coverage.grid.Format;
-import org.opengis.geometry.Envelope;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
-import org.opengis.referencing.ReferenceIdentifier;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.GeographicCRS;
 
 /** A grid coverage readers backing onto a WMS server by issuing GetMap */
 public class WMSCoverageReader extends AbstractGridCoverage2DReader {
@@ -178,7 +178,7 @@ public class WMSCoverageReader extends AbstractGridCoverage2DReader {
      * @throws IOException
      */
     public InputStream getFeatureInfo(
-            DirectPosition2D pos, String infoFormat, int featureCount, GetMapRequest getmap)
+            Position2D pos, String infoFormat, int featureCount, GetMapRequest getmap)
             throws IOException {
         GetFeatureInfoRequest request = wms.createGetFeatureInfoRequest(getmap);
         request.setFeatureCount(1);
@@ -214,7 +214,7 @@ public class WMSCoverageReader extends AbstractGridCoverage2DReader {
     public GridCoverage2D read(GeneralParameterValue[] parameters)
             throws IllegalArgumentException, IOException {
         // try to get request params from the request
-        Envelope requestedEnvelope = null;
+        ReferencedEnvelope requestedEnvelope = null;
         int width = -1;
         int height = -1;
         Color backgroundColor = null;
@@ -223,7 +223,7 @@ public class WMSCoverageReader extends AbstractGridCoverage2DReader {
                 final ReferenceIdentifier name = param.getDescriptor().getName();
                 if (name.equals(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName())) {
                     final GridGeometry2D gg = (GridGeometry2D) ((ParameterValue) param).getValue();
-                    requestedEnvelope = gg.getEnvelope();
+                    requestedEnvelope = reference(gg.getEnvelope());
                     // the range high value is the highest pixel included in the raster,
                     // the actual width and height is one more than that
                     width = gg.getGridRange().getHigh(0) + 1;
@@ -236,7 +236,7 @@ public class WMSCoverageReader extends AbstractGridCoverage2DReader {
 
         // fill in a reasonable default if we did not manage to get the params
         if (requestedEnvelope == null) {
-            requestedEnvelope = getOriginalEnvelope();
+            requestedEnvelope = reference(getOriginalEnvelope());
             width = 640;
             height =
                     (int)
@@ -444,7 +444,7 @@ public class WMSCoverageReader extends AbstractGridCoverage2DReader {
         }
 
         this.bounds = result;
-        this.originalEnvelope = new GeneralEnvelope(result);
+        this.originalEnvelope = new GeneralBounds(result);
     }
 
     /**
@@ -453,11 +453,12 @@ public class WMSCoverageReader extends AbstractGridCoverage2DReader {
      * @param envelope
      * @return
      */
-    ReferencedEnvelope reference(Envelope envelope) {
-        ReferencedEnvelope env = new ReferencedEnvelope(envelope.getCoordinateReferenceSystem());
+    ReferencedEnvelope reference(ReferencedEnvelope envelope) {
+        /*ReferencedEnvelope env = new ReferencedEnvelope(envelope.getCoordinateReferenceSystem());
         env.expandToInclude(envelope.getMinimum(0), envelope.getMinimum(1));
         env.expandToInclude(envelope.getMaximum(0), envelope.getMaximum(1));
-        return env;
+        return env;*/
+        return envelope;
     }
 
     /**
@@ -466,12 +467,28 @@ public class WMSCoverageReader extends AbstractGridCoverage2DReader {
      * @param ge
      * @return
      */
-    ReferencedEnvelope reference(GeneralEnvelope ge) {
+    ReferencedEnvelope reference(GeneralBounds ge) {
         return new ReferencedEnvelope(
                 ge.getMinimum(0),
                 ge.getMaximum(0),
                 ge.getMinimum(1),
                 ge.getMaximum(1),
                 ge.getCoordinateReferenceSystem());
+    }
+
+    /**
+     * Converts a {@link Bounds} into a {@link ReferencedEnvelope}
+     *
+     * @param ge
+     * @return
+     */
+    ReferencedEnvelope reference(Bounds b) {
+        return new ReferencedEnvelope(
+                bounds.getMinimum(0),
+                bounds.getMaximum(0), // minX, maxX
+                bounds.getMinimum(1),
+                bounds.getMaximum(1), // minY, maxY
+                bounds.getCoordinateReferenceSystem() // Système de coordonnées
+                );
     }
 }

@@ -1,6 +1,5 @@
 package gmx.iderc.geoserver.tjs.data;
 
-import com.sun.rowset.CachedRowSetImpl;
 import gmx.iderc.geoserver.tjs.catalog.ColumnInfo;
 import gmx.iderc.geoserver.tjs.catalog.DatasetInfo;
 import java.io.IOException;
@@ -10,12 +9,15 @@ import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.RowSet;
-import org.geotools.data.FeatureReader;
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
+import org.geotools.api.data.FeatureReader;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.data.store.ContentState;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * Created with IntelliJ IDEA. User: capote Date: 9/22/12 Time: 11:46 AM To change this template use
@@ -28,7 +30,7 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
     FeatureReader<SimpleFeatureType, SimpleFeature> featureReader;
     DatasetInfo datasetInfo;
     SimpleFeatureType type;
-    CachedRowSetImpl rst;
+    CachedRowSet rst;
     TJSDatasource tjsDatasource = null;
     Boolean caseInsensitive = true;
 
@@ -101,7 +103,9 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
         // TODO: determine if features without joined results should be skipped  / removed or have
         // empty values
         try {
-            rst = new CachedRowSetImpl();
+            RowSetFactory factory = RowSetProvider.newFactory();
+            rst = factory.createCachedRowSet();
+            // rst = new CachedRowSetImpl();
             if (this.tjsDatasource == null) {
                 this.tjsDatasource = datasetInfo.getTJSDatasource();
             }
@@ -163,10 +167,10 @@ public class TJSFeatureReader implements FeatureReader<SimpleFeatureType, Simple
                     newValue = lookup(keyValue, column.getName());
                 }
             } catch (Exception ex) {
-                newValue = "";
+                newValue = null;
             }
             if (newValue == null) {
-                newValue = ""; // this assumes string. But we need to know the type?
+                newValue = null; // this assumes string. But we need to know the type?
             } else {
                 // We do have at least one value, so we can continue building the feature
                 match = true;

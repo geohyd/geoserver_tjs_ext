@@ -19,25 +19,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import net.opengis.tjs10.*;
-import org.apache.log4j.lf5.util.StreamUtils;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
-import org.geotools.data.*;
+import org.geotools.api.data.*;
+import org.geotools.api.filter.capability.FunctionName;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.simple.SimpleFeatureImpl.*;
 import org.geotools.filter.FunctionFactory;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.v1_1.OWS;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.referencing.CRS;
-import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.tjs.TJS;
 import org.geotools.tjs.TJSConfiguration;
 import org.geotools.xlink.XLINK;
@@ -45,8 +46,6 @@ import org.geotools.xml.styling.SLDParser;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.geotools.xsd.StreamingParser;
-import org.opengis.filter.capability.FunctionName;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -285,7 +284,12 @@ public abstract class JoinDataTransformer extends TransformerBase {
 
                         // hago una copia del SLD y cierro la conexión
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        StreamUtils.copy(is, out);
+                        // StreamUtils.copy(is, out);
+                        int nRead;
+                        byte[] data = new byte[16384];
+                        while ((nRead = is.read(data, 0, data.length)) != -1) {
+                            out.write(data, 0, nRead);
+                        }
                         out.close();
                         is.close();
 
@@ -459,7 +463,6 @@ public abstract class JoinDataTransformer extends TransformerBase {
                                     tempWorkspaceInfo); // TJSExtension.TJS_TEMP_WORKSPACE
 
                     String tempDataStoreName = tempTJSStore.getName();
-
                     DataStoreInfo dsInfoNew =
                             getTempDatastoreIfExists(tjsTempDataStores, tempDataStoreName);
                     // add a datastore if there does not seem to be one already
@@ -535,6 +538,7 @@ public abstract class JoinDataTransformer extends TransformerBase {
                         // here name, this is done in the joindata reponse.
                         layer.setAdvertised(false);
                         gsCatalog.add(layer);
+                        this.removeLayerFromGWC(layer);
                     } else {
                         // reload layer?
                     }
@@ -590,6 +594,20 @@ public abstract class JoinDataTransformer extends TransformerBase {
                     Logger.getLogger(JoinDataTransformer.class.getName())
                             .log(Level.SEVERE, ex.getMessage());
                     ex.printStackTrace();
+                }
+            }
+
+            private void removeLayerFromGWC(LayerInfo layer) {
+                /**
+                 * If the layer is in the GWC, remove it This is necessary because if you restart
+                 * the server, the tjs layer will be erase in GC but not in GWC : GWC break in this
+                 * case
+                 */
+                GWC gwc = GWC.get();
+                GeoServerTileLayer tileLayer = gwc.getTileLayer(layer);
+                if (tileLayer != null) {
+                    gwc.removeTileLayers(
+                            new ArrayList<String>(Arrays.asList(layer.prefixedName())));
                 }
             }
 
@@ -967,7 +985,12 @@ public abstract class JoinDataTransformer extends TransformerBase {
                 try {
                     File file = File.createTempFile("gdas", ".xml");
                     FileOutputStream fos = new FileOutputStream(file);
-                    StreamUtils.copy(source, fos);
+                    // StreamUtils.copy(source, fos);
+                    int nRead;
+                    byte[] data = new byte[16384];
+                    while ((nRead = source.read(data, 0, data.length)) != -1) {
+                        fos.write(data, 0, nRead);
+                    }
                     fos.close();
                     return new FileInputStream(file);
                 } catch (IOException ex) {

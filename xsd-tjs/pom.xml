@@ -13,8 +13,8 @@
          http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <properties>
-        <gs.version>2.18.3</gs.version>
-        <gt.version>24-SNAPSHOT</gt.version>
+        <gs.version>2.25.2</gs.version>
+        <gt.version>31.2</gt.version>
         <tjs.version>1.1.8-SNAPSHOT</tjs.version>
     </properties>
 
@@ -29,7 +29,7 @@
     <!-- =========================================================== -->
     <groupId>org.geotools.xsd</groupId>
     <artifactId>gt-xsd-tjs</artifactId>
-    <version>24-SNAPSHOT</version>
+    <version>31.2</version>
     <packaging>jar</packaging>
     <name>TJS XML Support(xsd-tjs)</name>
 

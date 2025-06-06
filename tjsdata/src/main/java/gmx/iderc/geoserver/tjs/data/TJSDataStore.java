@@ -5,7 +5,7 @@
 
 package gmx.iderc.geoserver.tjs.data;
 
-import org.geotools.data.ServiceInfo;
+import org.geotools.api.data.ServiceInfo;
 
 import java.util.Map;
 

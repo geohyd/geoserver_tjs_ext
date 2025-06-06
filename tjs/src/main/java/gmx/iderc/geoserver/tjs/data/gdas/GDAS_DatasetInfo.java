@@ -15,9 +15,9 @@ import java.util.List;
 import net.opengis.tjs10.ColumnType1;
 import net.opengis.tjs10.ColumnType2;
 import net.opengis.tjs10.GDASType;
+import org.geotools.api.feature.type.Name;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.Name;
 
 /**
  * Created with IntelliJ IDEA. User: capote Date: 29/07/13 Time: 11:24 To change this template use

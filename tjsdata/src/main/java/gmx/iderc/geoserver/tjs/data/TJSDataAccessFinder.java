@@ -16,7 +16,7 @@
  */
 package gmx.iderc.geoserver.tjs.data;
 
-import org.geotools.data.DataAccessFactory;
+import org.geotools.api.data.DataAccessFactory;
 import org.geotools.util.factory.FactoryCreator;
 import org.geotools.util.factory.FactoryRegistry;
 import java.util.stream.Stream;
